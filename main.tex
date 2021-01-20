@@ -1,0 +1,146 @@
+\documentclass{article}
+
+% Formatting
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage[titletoc,title]{}
+
+% Math
+% https://www.overleaf.com/learn/latex/Mathematical_expressions
+% https://en.wikibooks.org/wiki/LaTeX/Mathematics
+\usepackage{amsmath,amsfonts,amssymb,mathtools}
+
+% Images
+% https://www.overleaf.com/learn/latex/Inserting_Images
+% https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions
+\usepackage{graphicx,float}   % needed for figures
+\usepackage{subcaption}
+
+% Tables
+% https://www.overleaf.com/learn/latex/Tables
+% https://en.wikibooks.org/wiki/LaTeX/Tables
+\usepackage{tabularx}
+
+% Algorithms
+% https://www.overleaf.com/learn/latex/algorithms
+% https://en.wikibooks.org/wiki/LaTeX/Algorithms
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{algorithmic}
+
+% Code syntax highlighting
+% https://www.overleaf.com/learn/latex/Code_Highlighting_with_minted
+\usepackage{minted}
+\usemintedstyle{borland}
+
+% References
+% https://www.overleaf.com/learn/latex/Bibliography_management_in_LaTeX
+% https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
+\usepackage{biblatex}
+\addbibresource{references.bib}
+
+% to be able to click on links and references
+\usepackage{hyperref}
+
+
+% Title content
+\title{Computational Physics II - Project 3 \\ Time-Dependet Schrödinger Equation}
+\newcommand{\aone}{Adrian Stroth}
+\newcommand{\atwo}{Edoardo Stefanin Mustacchi}
+\newcommand{\athree}{Francisco Crespo}
+\newcommand{\afour}{Cabibbo Group}
+\author{\aone\space, \atwo\space and \athree \\ \afour}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\begin{abstract}
+ 
+\end{abstract}
+
+%  Code intallation & verification
+\section{Code - TISE}\label{code}
+
+% subsection hamiltonian 
+\subsection{Hamiltonian}\label{hmltn}
+
+\subsection{Main code}\label{main}
+
+%subsection other modules 
+\subsection{Side Modules}
+
+%
+%subsection compiling and running 
+\subsection{Compiling and Running of the Code}
+After downloading the code from \ref{code} on should have the necessary directory structure saved locally.
+To compile all files on runs the script {\fontfamily{qcr}\selectfont compile.sh} from within TISE directory.
+This creates a {\fontfamily{qcr}\selectfont main.o} inside TISE and executables of every test program inside the test directory.
+Afterwards there exist two ways to run simulations. 
+% \begin{enumerate}
+%     \item Run from within TISE \begin{verbatim}
+%         main.o [N] [mass] [potential] [tolerance] [residue]
+%     \end{verbatim}
+%     \item Enter the desired parameters for simulation or many simulations in the {\fontfamily{qcr}\selectfont run\_simulation.sh} script and run from within TISE 
+%         \begin{verbatim}
+%             ./scripts/run_simulation.sh
+%         \end{verbatim} 
+%         or run the script from within scripts.
+% \end{enumerate}
+
+% section Algorithmic params
+\section{Study of the algorithmic parameters}\label{algrmtc parmtrs}
+
+
+
+%What is the idea behind that?
+%Why do we want to study the parameters?
+%What are we expecting to see?\\
+
+% \begin{center}
+% \begin{tabular}{c|c|c|c|c}
+%     Potential & N & $\hat{m}$ \\
+%     \hline
+%     Zero & 101 & 1\\
+%     Harmonic & 1001 & 0.000005 \\
+%     Well & 101 & 2.35 \\
+%     Wall & 101 & 2.5 \\
+% \end{tabular}
+% \end{center}
+
+\subsection{Zero-Potential}
+
+
+\subsection{Effect of tolerance on power method}
+The input parameters of the study can be taken from the table for each potential.
+The tolerance was varied from 1 to $10^{-8}$. 
+
+\subsection{Effect of residue on conjugate gradient}
+The input parameters for the simulation are the same as above and can be seen in the table.
+The residue parameters were varied from 1 to $10^{-10}$.
+
+In both cases for high tolerance and residue values the observable values were varying from the cases with smaller tolerance or residue.
+
+\section{Investigation of the Continuum Limit and the Infinite-Volume Limit}\label{finitevolume}
+Compared to the continuum and infinite volume limits of the first project, the dependence is much simpler, when instead of a relativistic Schroedinger equation, the non-relativistic version is implemented, and furthermore there is only one dimension. 
+To investigate the continuum limit the 
+% Example of how to include plots
+% \begin{figure}
+%     \centering
+%     \includegraphics[scale = 0.7]{harmon_osc_continuum.png}
+%     \caption{Varying the mass parameter m, and thereby varying a, while keeping the length L of the system constant. To achieve this the lattice point number N has to be adjusted according to $L = (N-1)*a$.}
+%     \label{inf_volume_limit}
+% \end{figure}
+
+
+
+
+
+\clearpage
+\section{Additional notes}
+Github link to the code: \hyperlink{https://github.com/carlulli/TISE}{https://github.com/carlulli/TISE}.\\
+Link to the files for future algorithmic parameter study:\\
+\hyperlink{https://drive.google.com/drive/folders/1qDrw6Aoyzp01VN0UOLHqUtrzG8zt5tcV?usp=sharing}{https://drive.google.com/drive/folders/1qDrw6Aoyzp01VN0UOLHqUtrzG8zt5tcV?usp=sharing}
+
+%\printbibliography
+\end{document}

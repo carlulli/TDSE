@@ -3,9 +3,10 @@
 #include "hamiltonian.h"
 #include "geometry.h"
 
-
+/* time step of the integration method */
 static double time_step;
 
+/* takes array and integration step */
 void euler_method(double complex *in, double tau) {
 
   int N = get_N();
@@ -18,6 +19,9 @@ void euler_method(double complex *in, double tau) {
   }
 }
 
+
+
+/* function to use with conjugate_gradient() , applies the operator (1 +t*t/4*H*H) psi and gives back out */
 void operator(double complex *in, double complex *out) {
   int N = get_N();
   double complex Hpsi[N];
@@ -28,6 +32,7 @@ void operator(double complex *in, double complex *out) {
   }
 }
 
+/* uses conjugategradient to calculate inverse of the operator it needs */
 void UCN_method(double complex *in,double tau) {
   time_step = tau;
   int N = get_N();

@@ -140,6 +140,16 @@ void set_potential(int pot) {
 	set_minV();
 }
 
+double return_V(int n) {
+	if (V == NULL) {
+		printf("[hamiltonian.c | get_V()] ERROR! Memory for Potential nor allocated!\n");
+		exit(0);
+	}
+	else {
+		return V[n];
+	}
+}
+
 void set_Hdefpos() {
 	if (shift == 0) {
 		for(int j = 0; j < N; j++) {

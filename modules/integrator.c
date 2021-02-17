@@ -141,10 +141,12 @@ void strangsplitting_method(double complex *in, double tau) {
 
   int N = get_N();
   double mass = get_m(); // function that needs to be defined
-  double complex eta_q[N], eta_ext_q[2*N+2], chi_q[N], chi_ext_q[2*N+2]; // safer and cleaner with dynamic allicating
+  double complex *eta_q, *eta_ext_q, *chi_q; // safer and cleaner with dynamic allicating
 
   /* dynamic allication of wavefunctions */
-  eta_q = (double complex*) malloc(sizeof(eta_q))
+  eta_q = (double complex*) malloc(sizeof(eta_q)*N);
+  eta_ext_q = (double complex*) malloc(sizeof(eta_ext_q)*2*N+2);
+  chi_q = (double complex*) malloc(sizeof(chi_q)*N);
 
   //
   // eta_ext_q will be tranformed to fftw_complex *
@@ -179,7 +181,8 @@ void strangsplitting_method(double complex *in, double tau) {
 
 /* 4. part */
   for (int k=0; k<2*N+2; k++) {
-    cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k];
+    // cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k];
+    cx_in[k] = (kiss_fft_cpx) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k];
   }
 
   /* 5. part */

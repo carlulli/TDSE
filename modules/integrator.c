@@ -177,7 +177,7 @@ void strangsplitting_method(double complex *in, double tau) {
 
 /* 4. part */
   for (int k=0; k<2*N+2; k++) {
-    // cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k];
+    // cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k]; //trouble with datatype??
     cx_in[k] = (kiss_fft_cpx) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k];
   }
 
@@ -185,7 +185,7 @@ void strangsplitting_method(double complex *in, double tau) {
   kiss_fft( icfg, cx_in, cx_out);
 
   for (int n=0; n<2*N+2; n++) {
-    creal(chi_q[n]) = cx_out[n].r;
+    creal(chi_q[n]) = cx_out[n].r; // trouble with data type??
     cimag(chi_q[n]) = cx_out[n].i;
   }
 

@@ -135,7 +135,7 @@ void strangsplitting_finished() {
 }
 
 
-void strangsplitting_method(double complex *in, double complex *out, double tau) {
+void strangsplitting_method(double complex *in, double tau) {
   /* in = psi_q and out = psi_q+1 */
 
   int N = get_N();
@@ -191,7 +191,7 @@ void strangsplitting_method(double complex *in, double complex *out, double tau)
 
   /* 6. part */
   for (int n=0; n<N+1; n++) {
-    out[n] = exp(-0.5*I*tau*get_V(n))*chi_q[n+1];
+    in[n] = exp(-0.5*I*tau*get_V(n))*chi_q[n+1];
   }
 
 }

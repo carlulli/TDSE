@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+IDIR="../include"
+MDIR="../modules"
+
+gcc -Wall -o int_test -I ${IDIR} ${MDIR}/conjugategradient.c ${MDIR}/geometry.c ${MDIR}/linearalgebra.c ${MDIR}/hamiltonian.c ${MDIR}/wavefunction.c ${MDIR}/assert.c ${MDIR}/integrator.c integrator_test.c -lm

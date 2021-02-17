@@ -122,6 +122,7 @@ void init_strangsplitting() {
   int N = get_N();
   kiss_fft_cpx *cx_in, *cx_out;
   cx_in = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx*N));
+  cx_out = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx*N));
   kiss_fft_cfg cfg = kiss_fft_alloc( N, 0, NULL, NULL);
   kiss_fft_cfg icfg = kiss_fft_alloc( N, 1, NULL, NULL);
   initcount = 1; // or something with the ponter?
@@ -140,15 +141,13 @@ void strangsplitting_method(double complex *in, double tau) {
 
   int N = get_N();
   double mass = get_m(); // function that needs to be defined
-  double complex eta_q[N], eta_ext_q[2*N+2], chi_q[N], chi_ext_q[2*N+2]; // safer and cleaner with dynamic allicating
-  fftw_complex chi_hat_q;
+  double complex *eta_q, *eta_ext_q, *chi_q; // safer and cleaner with dynamic allicating
 
-  chi_hat_q = fftw_malloc(sizeof(fftw_complex)*(2*N+2));
+  /* dynamic allication of wavefunctions */
+  eta_q = (double complex*) malloc(sizeof(eta_q)*N);
+  eta_ext_q = (double complex*) malloc(sizeof(eta_ext_q)*2*N+2);
+  chi_q = (double complex*) malloc(sizeof(chi_q)*N);
 
-  //
-  // eta_ext_q will be tranformed to fftw_complex *
-  // chi_q will be retransformed from fftw_complex *
-  // chi_hat_q, eta_hat_q wil only be fftw_complex
 
   /* 1. part */
   for (int n=0; n<N; n++) {
@@ -178,15 +177,16 @@ void strangsplitting_method(double complex *in, double tau) {
 
 /* 4. part */
   for (int k=0; k<2*N+2; k++) {
-    fftw.in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*fftw.out[k];
+    // cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k];
+    cx_in[k] = (kiss_fft_cpx) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k];
   }
 
   /* 5. part */
-  kiss_fft( icfg, cx_out, cx_in);
+  kiss_fft( icfg, cx_in, cx_out);
 
   for (int n=0; n<2*N+2; n++) {
-    creal(chi_q[n]) = cx_in[n].r;
-    cimag(chi_q[n]) = cx_in[n].i;
+    creal(chi_q[n]) = cx_out[n].r;
+    cimag(chi_q[n]) = cx_out[n].i;
   }
 
   /* 6. part */

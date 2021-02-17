@@ -52,7 +52,7 @@ void UCN_method(double complex *in,double tau) {
 
   H(nu,Hnu);
   H(Hnu,HHnu);
-  
+
   for(int i = 0; i < N; i++) {
     in[i] = nu[i] - tau*Hnu[i]*I -1/4*tau*tau*HHnu[i];
   }
@@ -121,7 +121,7 @@ with init_strangsplitting
 void init_strangsplitting() {
   int N = get_N();
   kiss_fft_cpx *cx_in, *cx_out;
-  cx_in = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx*N));
+  cx_in = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx)*N); // was malloc(sizeof(kiss_fft_cpx*N)) which should not
   kiss_fft_cfg cfg = kiss_fft_alloc( N, 0, NULL, NULL);
   kiss_fft_cfg icfg = kiss_fft_alloc( N, 1, NULL, NULL);
   initcount = 1; // or something with the ponter?

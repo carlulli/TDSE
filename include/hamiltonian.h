@@ -6,7 +6,7 @@
 
 /*sets the mass parameter that is used in the hamiltonian*/
 void set_kinetic_params(double m);
-
+double get_m();
 //void set_potential(const char* fname, union Potential potential);
 
 /*******************************************************************************
@@ -30,6 +30,8 @@ void set_coulomb_potential();
 void set_minV();
 void set_Hdefpos();
 double get_minV();
+double return_V(int n);
+// reutrns V[n]
 /*******************************************************************************
 This function applies the Hamiltonian to the wave function in and returns the
 result in the wavefunction out.

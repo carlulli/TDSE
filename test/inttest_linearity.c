@@ -97,8 +97,8 @@ argv[2] = integrator_choice
   );
 
   /* generate random coomplex coefficients */
-  random_complex_coefficient(alpha);
-  random_complex_coefficient(beta);
+  alpha = random_complex_coefficient();
+  beta = random_complex_coefficient();
 
   printf(
     "Linearity test: coefficients:\n"

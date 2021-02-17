@@ -1,0 +1,148 @@
+#include <stdio.h>
+
+#include "wavefunction.h"
+#include "integrator.h"
+#include "geometry.h"
+#include "linearalgebra.h"
+#include "assert.h"
+
+#define _FILE_NAME_ "test/inttest_analytical.c"
+
+/*******************************************************************************
+// Linearity test
+
+// goal:
+//  1x time evolution for || f(H)psi - f(E)psi||
+calculate this norm for 1 time step
+
+Use V=0 -> eigenvlue and eigenvector of H=laplace are known
+eigenvector(n) = sqrt(2/(N+1)) sin(pi*(n+1)*k/(N+1))
+eigenvalue(k) = -4sin^2(pi*k/2(N+1))
+k = 0,...,N ???
+H = K + V = K = - 1/2m_hat * laplace
+f(H) = exp(-i*tau_hat*H) -> integrator applied
+f(E) = exp(i*tau_hat/2m_hat*eigenvalue)
+
+create eigenvector phi of laplace as above
+  -> here define a k
+
+calculate f(E) with before defined k
+double complex fofE // is that even complex???
+
+    || integrator(phi) - fofE*phi ||
+
+    print( calculated value to some file and/or to terminal)
+*******************************************************************************/
+
+void integrator(double complex* in, double tau, int integ_choice) {
+    /***************************************************************
+   function that calculates the time evolution of input wavefunciton
+   for a chosen integrator method
+   ****************************************************************/
+  if (integ_choice == 0) {
+    euler_method(in, tau);
+    printf("Integrator used: Euler Method!\n");
+  }
+  else if (integ_choice == 1) {
+    UCN_method(in, tau);
+    printf("Integrator used: Unitary Crank Nicolson Method!\n");
+  }
+  else if (integ_choice == 2) {
+    strangsplitting_method(in, tau);
+    printf("Integrator used: Strang Splitting Method!\n");
+  }
+  else {
+    printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"
+  "Remember: Integrator choice is 3rd input when calling inttest_linearity.c.\n ",
+  "Euler Method = 1, Unitary Crank-Nicolson Method = 2, Strang Splitting Method = 2\n" );
+
+  exit(-1);
+  }
+}
+
+int main(int argc, char const *argv[]) {
+  /****************************************************************
+  argv[1] = N
+  argv[2] = tau
+  argv[3] = integrator_choice
+  ****************************************************************/
+
+    assert(argc==5,_FILE_NAME_,"main","ERROR. Necessary number of input parameters 4!\n
+    Usage: inttest_analytical {N} {tau} {integrator_choice}\n
+    Remember: The executable Name is the first parameter.\n");
+
+    set_params(argc, argv);
+    int N = get_N();
+    int k = 1; // choice for k
+    double tau = atoi(argv[2]);
+    int integrator_choice = atoi(argv[3]);
+    set_kinetic_params(m);
+    set_potential(0);
+    print_hamiltonian_info();
+
+    double complex *phi, *left, *delta;
+    double complex fofE;
+
+    /* dynamic memory allication (remember to free at the end) */
+    phi = (double*) malloc(sizeof(phi) * N);
+    left = (double*) malloc(sizeof(left) * N);
+    delta = (double*) malloc(sizeof(delta) * N);
+
+    /* set phi as eigenvector of laplace
+    -> k=1
+    */
+    for (int n=0; n<N; n++) {
+      phi[n] = sqrt(2./(N+1))*sin(M_PI*(n+1)*k/(N+1));
+      left[n] = phi[n]; // copy of phi
+    }
+    for (int n=0; n<2; n++) {
+        printf("First three phi values:\t phi[%d] = %.e + %e * i\n", n, creal(phi[n]), cimag(phi[n]);
+    }
+
+    /* calculate f(E) */
+    fofE = (-4) * sin(M_PI*k/(2*(N+1))) * sin(M_PI*k/(2*(N+1)));
+
+    /* calculate delta */
+    integrator(left, tau, integrator_choice);
+    for (int n=0; n<N; n++) {
+      delta[n] = left[n] - fofE * phi[n];
+    }
+
+    printf("Calcualted difference || integrator(phi) - fofE*phi || = %.16e \n", norm(delta, N));
+    printf("Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n");
+
+    FILE *fp;
+    int namesize = 19;
+    for (int i=1; i<=3; i++) { namesize += strlen(argv[i]); }
+    char filename[namesize];
+
+    snprintf(
+      filename, sizeof(filename),
+      "data/int_anal_test_%s_%s_%s.txt", argv[1], argv[2], argv[3]
+    );
+
+    fp = fopen(filename, "w");
+    fprintf(fp, "n\tREAL(phi[n])\tIMAG(phi[n])\n");
+    for (int i=0; i<N; i++) {
+      fprintf(fp, "%d\t%.e\t%.e\n", i, creal(psia[i]), cimag(psia[i]), creal(psib[i]), cimag(psib[i]));
+    }
+    if (pot == 0) {fprintf("Potential used:\tZERO potential\n";}
+    else if (pot == 1) {fprintf("Potential used:\tHARMONIC potential\n";}
+    else if (pot == 2) {fprintf("Potential used:\tWELL potential\n";}
+    else if (pot == 3) {fprintf("Potential used:\tWALL potential\n";}
+    else {fprintf("Potential used:\tERROR\n";}
+    fprintf(
+      fp, "norm(delta) = norm( ||integrator(phi) - fofE*phi|| )\n"
+      "norm(delta) = %.16e", norm(delta, N)
+    );
+    fprintf("Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n");
+
+    fclose(fp);
+
+    /* Free allicated wavefunctions */
+    free(phi);
+    free(left);
+    free(delta);
+
+  return 0;
+}

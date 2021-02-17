@@ -13,8 +13,8 @@
 // Linearity test
 
 // goal:
-//   time evolution for ||H(a*psi + b*theta) - a*H(psi) + b*H(theta) ||
-calculate this norm for every time step
+//  1x time evolution for ||int(a*psi + b*theta) - a*int(psi) + b*int(theta) ||
+calculate this norm for every time step (here 1 time step is enough)
 
 create random wavefunctions psi and theta
 create random coefficients
@@ -54,14 +54,17 @@ void integrator(double complex* in, double tau, int integ_choice) {
 
 int main(int argc, char const *argv[]) {
 /****************************************************************
-argv[0] = N
-argv[1] = tau
-argv[2] = integrator_choice
+argv[1] = N
+argv[2] = tau
+argv[3] = integrator_choice
+argv[4] = potential
 ****************************************************************/
 
-  assert(argc==4,_FILE_NAME_,"main","ERROR. Necessary number of input parameters 4!\n
-  Usage: inttest_linearity {N} {tau} {integrator_choice}\n Remember: The executable Name is the first parameter.\n");
+  assert(argc==5,_FILE_NAME_,"main","ERROR. Necessary number of input parameters 4!\n
+  Usage: inttest_linearity {N} {tau} {integrator_choice} {potential_choice}\n
+  Remember: The executable Name is the first parameter.\n");
 
+  printf("This program calculates: norm(delta) = norm( ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| )\n" );
   // if (argc == 4) {
   //   printf(
   //     "\n[ inttest_linearity.c | input parameters ] ERROR. Necessary number of input parameters 4!\n"
@@ -75,6 +78,10 @@ argv[2] = integrator_choice
   int N = get_N();
   double tau = atoi(argv[2]);
   int integrator_choice = atoi(argv[3]);
+  set_kinetic_params(m);
+  int pot = atoi(argv[4]);
+  set_potential(pot);
+  print_hamiltonian_info();
   double complex *psia, *psib;
   double complex alpha,  beta;
   double complex *left, *right, *delta;
@@ -130,12 +137,12 @@ argv[2] = integrator_choice
   /* Printing test infos to text file */
   FILE *fp;
   int namesize = 19;
-  for (int i=1; i<=3; i++) { namesize += strlen(argv[i]); }
+  for (int i=1; i<=4; i++) { namesize += strlen(argv[i]); }
   char filename[namesize];
 
   snprintf(
     filename, sizeof(filename),
-    "data/int_lin_test_%s_%s_%s.txt", argv[1], argv[2], argv[3]
+    "data/int_lin_test_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4]
   );
 
   fp = fopen(filename, "w");
@@ -147,9 +154,15 @@ argv[2] = integrator_choice
     fp, "Coefficients:\n" "alpha = %.e + %.e * I\n" "beta = %.e + %.e * I\n",
     creal(alpha), cimag(alpha), creal(beta), cimag(beta)
   );
+  if (pot == 0) {fprintf("Potential used:\tZERO potential\n";}
+  else if (pot == 1) {fprintf("Potential used:\tHARMONIC potential\n";}
+  else if (pot == 2) {fprintf("Potential used:\tWELL potential\n";}
+  else if (pot == 3) {fprintf("Potential used:\tWALL potential\n";}
+  else {fprintf("Potential used:\tERROR\n";}
+
   fprintf(
     fp, "norm(delta) = norm( ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| )\n"
-    "norm(delta) = %.e", norm(delta, N)
+    "norm(delta) = %.16e\n", norm(delta, N)
   );
   fprintf("Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n");
 

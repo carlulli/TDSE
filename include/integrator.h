@@ -24,7 +24,7 @@ void strangsplitting_finished();
 void double_to_kissfft_cpx(double complex* in, kiss_fft_cpx *out, int N);
 // assigns real and imag of out by real and imag of in for all N values
 
-void kissfft_cpx_to_double(kiss_fft_cpx *in, double complex* out, int N)
+void kissfft_cpx_to_double(kiss_fft_cpx *in, double complex* out, int N);
 // assigns out[n] = in[n].r + i * in[n].i  for all N values
 
 void strangsplitting_method(double complex *in, double tau);

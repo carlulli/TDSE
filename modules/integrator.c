@@ -6,6 +6,7 @@
 #include "hamiltonian.h"
 #include "geometry.h"
 #include "kiss_fft.h"
+// in kiss_fft.h in line 83: changed default from float to double
 
 /* time step of the integration method */
 static double time_step;
@@ -118,7 +119,7 @@ with init_strangsplitting
 
 /* Struct for kissfft paramers. Then they should be usable in other functions */
 struct fft {
-  kiss_fft_cpx *cx_in, *cx_out;;
+  kiss_fft_cpx *cx_in, *cx_out;
   kiss_fft_cfg cfg, icfg;
 } fft;
 
@@ -142,14 +143,14 @@ void strangsplitting_finished() {
 }
 
 /* functions to convert double complex to kiss_fft_cpx */
-void double_to_kissfft_cpx(double complex* in, kiss_fft_cpx *out, int N) {
+void double_to_kissfft_cpx(double complex *in, kiss_fft_cpx *out, int N) {
   for (int n=0; n<N; n++) {
       out[n].r = creal(in[n]);
       out[n].i = cimag(in[n]);
     }
 }
 
-void kissfft_cpx_to_double(kiss_fft_cpx *in, double complex* out, int N) {
+void kissfft_cpx_to_double(kiss_fft_cpx *in, double complex *out, int N) {
   for (int n=0; n<2*N+2; n++) {
     out[n] = (double) (in[n].r) + (double) (in[n].i) * I;
   }
@@ -159,6 +160,7 @@ void kissfft_cpx_to_double(kiss_fft_cpx *in, double complex* out, int N) {
 void strangsplitting_method(double complex *in, double tau) {
   /* in = psi_q and out = psi_q+1 */
 
+  // struct fft fft;
   int N = get_N();
   double mass;
   mass = get_m(); // function that needs to be defined
@@ -179,9 +181,9 @@ void strangsplitting_method(double complex *in, double tau) {
 
   /* 2. part */
   for (int n=0; n<2*N+2; n++) {
-    if (n>0 || n<N+1) { eta_ext_q[n] = eta_q[n-1]; }
-    else if (n>N+1) { eta_ext_q[n] = -eta_ext_q[(2*N+2)-n]; }
-    else { eta_ext_q[n] = 0; }
+    if (n>0 || n<N+1) {eta_ext_q[n] = eta_q[n-1];}
+    else if (n>N+1) {eta_ext_q[n] = -eta_ext_q[(2*N+2)-n];}
+    else {eta_ext_q[n] = 0;}
   }
 
   /* 3. part */
@@ -190,29 +192,28 @@ void strangsplitting_method(double complex *in, double tau) {
     //     fft.cx_in[n].r = creal(eta_ext_q[n]);
     //     fft.cx_in[n].i = cimag(eta_ext_q[n]);
     double_to_kissfft_cpx(eta_ext_q, fft.cx_in, N);
-      }
-    kiss_fft(fft.cfg, fft.cx_in, fft.cx_out);
-  }
+    }
   else {
     printf("[integrator.c | strangsplitting_method()] ERROR! FFTW Plan not prepared.\n"
     "init_strangsplitting was probably not called!\n");
     exit(0);
   }
+  kiss_fft(fft.cfg, fft.cx_in, fft.cx_out);
 
 /* 4. part */
   for (int k=0; k<2*N+2; k++) {
     // cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k]; //trouble with datatype??
     // fft.cx_in[k] = (kiss_fft_cpx) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2)))*fft.cx_out[k];
     /* fft.cx_in[k] is of datatype kiss_fft_cpx while fft.cx_in[k].r is float (or hopefully if successful: double) so calculation is easier */
-    fft.cx_in[k].r = (double) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * fft.cx_out[k].r;
-    fft.cx_in[k].i = (double) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * fft.cx_out[k].i;
+    fft.cx_in[k].r = (double) 1./(2*N+2)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * fft.cx_out[k].r;
+    fft.cx_in[k].i = (double) 1./(2*N+2)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * fft.cx_out[k].i;
   }
 
 
   /* 5. part */
   kiss_fft(fft.icfg, fft.cx_in, fft.cx_out);
 
-  kissfft_cpx_to_double(fft.cx_in, fft.cx_out, N);
+  kissfft_cpx_to_double(fft.cx_in, chi_q, N);
   // for (int n=0; n<2*N+2; n++) {
   //   // creal(chi_q[n]) = fft.cx_out[n].r; // trouble with data type??
   //   // cimag(chi_q[n]) = fft.cx_out[n].i;

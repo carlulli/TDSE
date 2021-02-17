@@ -34,6 +34,11 @@ void set_kinetic_params(double m) {
 	}
 
 }
+
+double get_m() {
+	return mass;
+}
+
 /* unfortunate attempt to avoid using set_potential  */
 /*void set_potential(const char* fname, union Potential potential ){
 	if strcmp(fname, "ZERO") == 0 {

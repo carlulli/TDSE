@@ -148,10 +148,6 @@ void strangsplitting_method(double complex *in, double tau) {
   eta_ext_q = (double complex*) malloc(sizeof(eta_ext_q)*2*N+2);
   chi_q = (double complex*) malloc(sizeof(chi_q)*N);
 
-  //
-  // eta_ext_q will be tranformed to fftw_complex *
-  // chi_q will be retransformed from fftw_complex *
-  // chi_hat_q, eta_hat_q wil only be fftw_complex
 
   /* 1. part */
   for (int n=0; n<N; n++) {

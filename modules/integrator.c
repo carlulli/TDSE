@@ -131,7 +131,7 @@ void init_strangsplitting() {
   fft.cx_out = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx)*N);
   fft.cfg = kiss_fft_alloc( N, 0, NULL, NULL);
   fft.icfg = kiss_fft_alloc( N, 1, NULL, NULL);
-  initcount = &N; // or something with the ponter?
+  initcount = &N; // some value other then NULL. here  adress of N
 }
 
 void strangsplitting_finished() {
@@ -141,7 +141,7 @@ void strangsplitting_finished() {
   initcount = NULL;
 }
 
-/* function to convert double complex to kiss_fft_cpx */
+/* functions to convert double complex to kiss_fft_cpx */
 void double_to_kissfft_cpx(double complex* in, kiss_fft_cpx *out, int N) {
   for (int n=0; n<N; n++) {
       out[n].r = creal(in[n]);
@@ -151,7 +151,7 @@ void double_to_kissfft_cpx(double complex* in, kiss_fft_cpx *out, int N) {
 
 void kissfft_cpx_to_double(kiss_fft_cpx *in, double complex* out, int N) {
   for (int n=0; n<2*N+2; n++) {
-    out[n] = in[n].r + in[n].i * I;
+    out[n] = (double) (in[n].r) + (double) (in[n].i) * I;
   }
 }
 
@@ -186,9 +186,10 @@ void strangsplitting_method(double complex *in, double tau) {
 
   /* 3. part */
   if (initcount != NULL) {
-    for (int n=0; n<2*N+2; n++) {
-        fft.cx_in[n].r = creal(eta_ext_q[n]);
-        fft.cx_in[n].i = cimag(eta_ext_q[n]);
+    // for (int n=0; n<2*N+2; n++) {
+    //     fft.cx_in[n].r = creal(eta_ext_q[n]);
+    //     fft.cx_in[n].i = cimag(eta_ext_q[n]);
+    double_to_kissfft_cpx(eta_ext_q, fft.cx_in, N);
       }
     kiss_fft(fft.cfg, fft.cx_in, fft.cx_out);
   }
@@ -201,19 +202,25 @@ void strangsplitting_method(double complex *in, double tau) {
 /* 4. part */
   for (int k=0; k<2*N+2; k++) {
     // cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k]; //trouble with datatype??
-    fft.cx_in[k] = (kiss_fft_cpx) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2)))*fft.cx_out[k];
+    // fft.cx_in[k] = (kiss_fft_cpx) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2)))*fft.cx_out[k];
+    /* fft.cx_in[k] is of datatype kiss_fft_cpx while fft.cx_in[k].r is float (or hopefully if successful: double) so calculation is easier */
+    fft.cx_in[k].r = (double) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * fft.cx_out[k].r;
+    fft.cx_in[k].i = (double) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * fft.cx_out[k].i;
   }
+
 
   /* 5. part */
-  kiss_fft( fft.icfg, fft.cx_in, fft.cx_out);
+  kiss_fft(fft.icfg, fft.cx_in, fft.cx_out);
 
-  for (int n=0; n<2*N+2; n++) {
-    // creal(chi_q[n]) = fft.cx_out[n].r; // trouble with data type??
-    // cimag(chi_q[n]) = fft.cx_out[n].i;
-    chi_q[n] = fft.cx_out[n].r;
-  }
+  kissfft_cpx_to_double(fft.cx_in, fft.cx_out, N);
+  // for (int n=0; n<2*N+2; n++) {
+  //   // creal(chi_q[n]) = fft.cx_out[n].r; // trouble with data type??
+  //   // cimag(chi_q[n]) = fft.cx_out[n].i;
+  //   chi_q[n] = fft.cx_out[n].r + cx_out[k].i * I;
+  // }
 
   /* 6. part */
+  // only look at N (or N+1?) values of chi_q with and "moving 1 step back to -1"
   for (int n=0; n<N+1; n++) {
     in[n] = exp(-0.5*I*tau*V[n])*chi_q[n+1];
   }

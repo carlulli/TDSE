@@ -6,7 +6,7 @@
 
 void set_random_wavefunction(double complex* psi,int N) {
 
-  // srand(time(NULL)); is called in beginning of the main.c
+srand(time(NULL)); // is called in beginning of the main.c
 
   for(int  i = 0; i < N; i++) {
     psi[i] = 1.0*rand()/RAND_MAX + 1.0*rand()/RAND_MAX*I;
@@ -16,4 +16,8 @@ void set_random_wavefunction(double complex* psi,int N) {
     psi[i]  = psi[i]/psi_norm;
 
   }
+}
+
+void random_complex_coefficient(double complex* c) {
+  c = 1.0*rand()/RAND_MAX + 1.0*rand()/RAND_MAX*I;
 }

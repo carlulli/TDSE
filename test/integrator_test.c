@@ -12,6 +12,8 @@
 /* in this routine the correct functioning of the various integration methods implemented */
 
 int main  (int argc, char *argv[]) {
+  init_strangsplitting();
 
+  strangsplitting_finished();
   return 0;
 }

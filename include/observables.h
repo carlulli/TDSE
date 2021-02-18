@@ -1,5 +1,5 @@
-#include <complex.h>
-#include <math.h>
+#ifndef OBSERVABLES_H
+#define OBSERVABLES_H
 
 /*******************************************************************************
 Get functions:
@@ -14,3 +14,5 @@ double get_deltap(double complex *psi);
 double get_avgsqr_p(double complex *psi);
 
 double Normal(double complex *psi);
+
+endif //OBSERVABLES_H

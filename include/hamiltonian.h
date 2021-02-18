@@ -13,11 +13,11 @@ double get_m();
 The following functions set the potential used by the hamiltonian.c module. The
 following options are available
 
-1 set_zero_potential()              : V(n) = 0
-2 set_harmonic_potential(double k)  : V(n) = k/2 * (n-(N-1)/2)^2
-3 set_well_potential(eps,a,b)       :
-4 set_wall_potential(eps,a,b)       :
-5 set_coulomb_potential();
+0 set_zero_potential()              : V(n) = 0
+1 set_harmonic_potential(double k)  : V(n) = k/2 * (n-(N-1)/2)^2
+2 set_well_potential(eps,a,b)       :
+3 set_wall_potential(eps,a,b)       :
+X set_coulomb_potential();
 The potential must be set exactly once by the main program.
 *******************************************************************************/
 void set_potential(int pot);

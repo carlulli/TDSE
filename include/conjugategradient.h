@@ -11,4 +11,4 @@ void set_res(char *argv[]);
 double get_res();
 
 
-#endif
+#endif //CONJUGATEGRADIENT_H

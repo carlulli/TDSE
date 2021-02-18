@@ -1,4 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <complex.h>
+#include <string.h>
 #include <time.h>
 
 #include "wavefunction.h"
@@ -6,6 +10,7 @@
 #include "geometry.h"
 #include "linearalgebra.h"
 #include "assert.h"
+#include "hamiltonian.h" //shouldnt be necessary if imported by the integrator
 
 #define _FILE_NAME_ "test/inttest_linearity.c"
 
@@ -44,7 +49,7 @@ void integrator(double complex* in, double tau, int integ_choice) {
   }
   else {
     printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"
-  "Remember: Integrator choice is 3rd input when calling inttest_linearity.c.\n ",
+  "Remember: Integrator choice is 3rd input when calling inttest_linearity.c.\n "
   "Euler Method = 1, Unitary Crank-Nicolson Method = 2, Strang Splitting Method = 2\n" );
 
   exit(-1);
@@ -60,9 +65,9 @@ argv[3] = integrator_choice
 argv[4] = potential
 ****************************************************************/
 
-  assert(argc==5,_FILE_NAME_,"main","ERROR. Necessary number of input parameters 4!\n
-  Usage: inttest_linearity {N} {tau} {integrator_choice} {potential_choice}\n
-  Remember: The executable Name is the first parameter.\n");
+  // assert(argc==5,_FILE_NAME_,"main","ERROR. Necessary number of input parameters 4!\n
+  // Usage: inttest_linearity {N} {tau} {integrator_choice} {potential_choice}\n
+  // Remember: The executable Name is the first parameter.\n");
 
   printf("This program calculates: norm(delta) = norm( ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| )\n" );
   // if (argc == 4) {
@@ -76,22 +81,24 @@ argv[4] = potential
   srand(time(NULL)); // is called in beginning of the main.c
   set_params(argc, argv);
   int N = get_N();
-  double tau = atoi(argv[2]);
+  double tau = atof(argv[2]);
   int integrator_choice = atoi(argv[3]);
-  set_kinetic_params(m);
+  double mass = 2.3512;
+  set_kinetic_params(mass);
   int pot = atoi(argv[4]);
   set_potential(pot);
   print_hamiltonian_info();
+
   double complex *psia, *psib;
   double complex alpha,  beta;
   double complex *left, *right, *delta;
 
   /* dynamic memory allication (remember to free at the end) */
-  psia = (double*) malloc(sizeof(psia) * N);
-  psib = (double*) malloc(sizeof(psib) * N);
-  left = (double*) malloc(sizeof(left) * N);
-  right = (double*) malloc(sizeof(right) * N);
-  delta = (double*) malloc(sizeof(delta) * N);
+  psia = (double complex*) malloc(sizeof(double) * N);
+  psib = (double complex*) malloc(sizeof(double) * N);
+  left = (double complex*) malloc(sizeof(double) * N);
+  right = (double complex*) malloc(sizeof(double) * N);
+  delta = (double complex*) malloc(sizeof(double) * N);
 
   /* generate random normalized wavefunctions psia and psib */
   set_random_wavefunction(psia, N);
@@ -110,13 +117,13 @@ argv[4] = potential
   printf(
     "Linearity test: coefficients:\n"
     "\talpha= %.e + %.e * i \n" "\tPsib= %.e + %.e * i\n",
-    creal(psia), cimag(psia), creal(psib), cimag(psib)
+    creal(alpha), cimag(alpha), creal(beta), cimag(beta)
   );
 
   /* Calculate int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib) */
   /* Left hand side */
   for(int n = 0; n < N; n++) {
-    left[n] = alpha*psi[n] + beta*theta[n];
+    left[n] = alpha*psia[n] + beta*psib[n];
   }
 
   integrator(left, tau, integrator_choice);
@@ -127,8 +134,8 @@ argv[4] = potential
 
   /* ...and difference */
   for(int n = 0; n < N; n++) {
-    right[n] = alpha*psia[n] + beta*psib[i];
-    delta[i] = left[i] - right[i];
+    right[n] = alpha*psia[n] + beta*psib[n];
+    delta[n] = left[n] - right[n];
   }
 
   printf("Calcualted difference ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| = %.e \n", norm(delta, N));
@@ -154,17 +161,17 @@ argv[4] = potential
     fp, "Coefficients:\n" "alpha = %.e + %.e * I\n" "beta = %.e + %.e * I\n",
     creal(alpha), cimag(alpha), creal(beta), cimag(beta)
   );
-  if (pot == 0) {fprintf("Potential used:\tZERO potential\n";}
-  else if (pot == 1) {fprintf("Potential used:\tHARMONIC potential\n";}
-  else if (pot == 2) {fprintf("Potential used:\tWELL potential\n";}
-  else if (pot == 3) {fprintf("Potential used:\tWALL potential\n";}
-  else {fprintf("Potential used:\tERROR\n";}
+  if (pot == 0) {fprintf(fp, "Potential used:\tZERO potential\n");}
+  else if (pot == 1) {fprintf(fp, "Potential used:\tHARMONIC potential\n");}
+  else if (pot == 2) {fprintf(fp, "Potential used:\tWELL potential\n");}
+  else if (pot == 3) {fprintf(fp, "Potential used:\tWALL potential\n");}
+  else {fprintf(fp, "Potential used:\tERROR\n");}
 
   fprintf(
     fp, "norm(delta) = norm( ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| )\n"
-    "norm(delta) = %.16e\n", norm(delta, N)
+    "norm(delta) = %.e\n", norm(delta, N)
   );
-  fprintf("Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n");
+  fprintf(fp, "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n");
 
   fclose(fp);
 

@@ -1,6 +1,6 @@
 #include <complex.h>
 
-
+struct fft;
 /* error of O(tau^2) */
 void euler_method(double complex *in,double tau);
 

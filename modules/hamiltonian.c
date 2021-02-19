@@ -242,9 +242,9 @@ double  average_kinetic_energy(double complex *psi) {
 	}
 
 void print_hamiltonian_info() {
-	printf("Hamiltonian parameters: \nmass = %f\nN = %d\n", mass, N);
+	printf("\tHamiltonian parameters: \n\t\tmass = %f\n\t\tN = %d\n", mass, N);
 	for(int i = 0; i < N; i++){
-	printf("Potential V[%d] = %f\n",i,V[i]);
+	printf("\t\tPotential V[%d] = %f\n",i,V[i]);
 	}
 }
 

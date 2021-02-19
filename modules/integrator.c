@@ -41,7 +41,7 @@ void operator(double complex *in, double complex *out) {
 void UCN_method(double complex *in, double tau) {
   time_step = tau;
   int N = get_N();
-  double complex Hnu[N],HHnu[N], nu[N];
+  double complex Hnu[N],HHnu[N],nu[N];
   void (*op_ptr)(double complex *, double complex *);
   op_ptr = &operator;
 

@@ -16,6 +16,7 @@ void euler_method(double complex *in, double tau) {
   /* uses the geometry.h library to obtain the N number of lattice points */
   int N = get_N();
   double complex Hpsi[N];
+
   H(in,Hpsi);
 
   for(int i = 0; i < N; i++) {
@@ -37,22 +38,19 @@ void operator(double complex *in, double complex *out) {
 }
 
 /* uses conjugategradient to calculate inverse of the operator it needs */
-void UCN_method(double complex *in,double tau) {
-  //time_step = tau;
+void UCN_method(double complex *in, double tau) {
+  time_step = tau;
   int N = get_N();
   double complex Hnu[N],HHnu[N], nu[N];
   void (*op_ptr)(double complex *, double complex *);
   op_ptr = &operator;
 
-  for(int i = 0; i < N; i++) {
-
-  }
 
   conj_grad(in,nu,(*op_ptr));
 
   H(nu,Hnu);
   H(Hnu,HHnu);
-  
+
   for(int i = 0; i < N; i++) {
     in[i] = nu[i] - tau*Hnu[i]*I -1/4*tau*tau*HHnu[i];
   }

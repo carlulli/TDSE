@@ -25,4 +25,4 @@ INCLUDE="-I include -I kissff"
 MODULES="${MDIR}/wavefunction.c ${MDIR}/integrator.c ${MDIR}/geometry.c ${MDIR}/linearalgebra.c ${MDIR}/hamiltonian.c ${MDIR}/conjugategradient.c"
 
 # cd ..
-gcc ${CFLAGS} ${INCLUDE} ${MODULES} ${TDIR}/${TARGET}.c -Lkissfft -lkissfft-double -o ${TARGET}
+gcc ${CFLAGS} ${INCLUDE} ${MODULES} ${TDIR}/${TARGET}.c -Lkissfft -lkissfft-double -o ${TARGET}.exe

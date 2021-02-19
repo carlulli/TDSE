@@ -4,15 +4,16 @@
 #include <complex.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
 
 #include "wavefunction.h"
 #include "integrator.h"
 #include "geometry.h"
 #include "linearalgebra.h"
-#include "assert.h"
 #include "hamiltonian.h" //shouldnt be necessary if imported by the integrator
 
-#define _FILE_NAME_ "test/inttest_linearity.c"
+
+static int N = 0;
 
 /*******************************************************************************
 // Linearity test
@@ -44,10 +45,10 @@ void integrator(double complex* in, double tau, int integ_choice) {
     printf("Integrator used: Unitary Crank Nicolson Method!\n");
   }
   else if (integ_choice == 2) {
-    init_strangsplitting();
+    // init_strangsplitting();
     strangsplitting_method(in, tau);
     printf("Integrator used: Strang Splitting Method!\n");
-    strangsplitting_finished();
+    // finished_strangsplitting();
   }
   else {
     printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"
@@ -71,7 +72,7 @@ argv[4] = potential
   // Usage: inttest_linearity {N} {tau} {integrator_choice} {potential_choice}\n
   // Remember: The executable Name is the first parameter.\n");
 
-  printf("This program calculates: norm(delta) = norm( ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| )\n" );
+  printf("This program calculates: norm(delta) = norm( ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| )\n\n" );
   // if (argc == 4) {
   //   printf(
   //     "\n[ inttest_linearity.c | input parameters ] ERROR. Necessary number of input parameters 4!\n"
@@ -81,13 +82,13 @@ argv[4] = potential
   // }
 
   srand(time(NULL)); // is called in beginning of the main.c
-  set_params(argc, argv);
-  int N = get_N();
-  double tau = atof(argv[2]);
-  int integrator_choice = atoi(argv[3]);
+  set_params(argc, (char**) argv);
+  N = get_N();
+  double tau = get_tau();
+  int integrator_choice = get_integ_choice();
   double mass = 2.3512;
   set_kinetic_params(mass);
-  int pot = atoi(argv[4]);
+  int pot = get_pot_choice();
   set_potential(pot);
   print_hamiltonian_info();
 
@@ -101,6 +102,10 @@ argv[4] = potential
   psib = (double complex*) malloc(sizeof(double) * N);
   left = (double complex*) malloc(sizeof(double) * N);
   right = (double complex*) malloc(sizeof(double) * N);
+  assert(psia!=NULL); // check of condition is true else -> aboort?
+  assert(psib!=NULL);
+  assert(left!=NULL);
+  assert(right!=NULL);
 
   /* generate random normalized wavefunctions psia and psib */
   set_random_wavefunction(psia, N);
@@ -124,6 +129,7 @@ argv[4] = potential
 
   /* Calculate int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib) */
   /* Left hand side */
+  if (integrator_choice==2) {init_strangsplitting();}
   for(int n = 0; n < N; n++) {
     left[n] = alpha*psia[n] + beta*psib[n];
   }
@@ -133,7 +139,7 @@ argv[4] = potential
   /* Right hand side */
   integrator(psia, tau, integrator_choice);
   integrator(psib, tau, integrator_choice);
-
+  if (integrator_choice==2) {finished_strangsplitting();}
   /* ...and difference */
   maxdev = 0.0;
   for(int n = 0; n < N; n++) {
@@ -149,7 +155,7 @@ argv[4] = potential
 
   /* Printing test infos to text file */
   FILE *fp;
-  int namesize = 19;
+  int namesize = 45;
   for (int i=1; i<=4; i++) { namesize += strlen(argv[i]); }
   char filename[namesize];
 

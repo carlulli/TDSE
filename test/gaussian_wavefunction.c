@@ -23,15 +23,23 @@
 
 int main(int argc, char *argv[]) {
 
-  int N = 65;
-  double complex psi[N];
-  double time = 100;
-  double nsteps = 100;
+  /* Here the parameters are passed in the set_params function, which checks the validity */
+  set_params(argc, (char**) argv);
+  /* mass is always hardcoded */
+  double mass = 2.3512;
+  N = get_N();
+  double time = get_time();
+  double nsteps = get_nsteps();
   double tau = time/nsteps;
-  double mu = 20;
-  double sigma = 5;
-  double pbar = 2;
-  set_gaussian_wavefunction(psi,mu,sigma,pbar,N);
+  int integrator_choice = get_integ_choice();
+  int pot_choice = get_pot_choice();
+  double mu = atof(argv[6]);
+  double dx = atof(argv[7]);
+  double dp = atof(argv[8]);
+  set_kinetic_params(mass);
+  set_potential(pot_choice);
+  print_hamiltonian_info();
+  set_gaussian_wavefunction(psi,mu,dx,dp,N);
 
   for(int i = 0; i < N; i++) {
   printf("psi[i] = %f  (I) %f\n", creal(psi[i]), cimag(psi[i]));

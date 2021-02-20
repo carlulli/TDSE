@@ -33,7 +33,7 @@ void set_params(int argc, char *argv[]){
   // plan to rewrite for all input parameters!!!!!!
   if (argc<2) {
     printf("[geometry.c | set_params()] ERROR. You forgot to insert program parameters!\n"
-  "\tThe parameters are as follows: [NUM] [tau] [integrator choice] [potential_choice]\n"
+  "\tThe parameters are as follows: [NUM] [time] [Nsteps] [integrator choice] [potential_choice]\n"
   "\t\tNUM: odd and bigger 0\n" "\t\ttau: some double\n"
   "\t\tintegrator_choice: 0 = euler method, 1 = Unitary Crank Nicolson Method, 2 = Strang Splitting Method\n"
 "\t\tintegrator_choice: 0 = zero, 1 = harmonic oscillator, 2 = well, 3 = wall\n" );

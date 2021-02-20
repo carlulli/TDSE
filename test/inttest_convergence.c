@@ -9,11 +9,11 @@
 #include "assert.h"
 #include "conjugategradient.h"
 
-/* in this routine the correct functioning of the various integration methods implemented */
+/* in this routine the correct convergence of the various integration methods implemented */
 
-int main  (int argc, char *argv[]) {
-  init_strangsplitting();
+int main (int argc, char *argv[]) {
 
-  strangsplitting_finished();
+  
+
   return 0;
 }

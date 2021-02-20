@@ -75,6 +75,7 @@ void operator(double complex *in, double complex *out) {
 
 /* uses conjugategradient to calculate inverse of the operator it needs */
 void UCN_method(double complex *in,double tau) {
+  //sets time_step
   time_step = tau;
   int N = get_N();
   double complex Hnu[N],HHnu[N], nu[N];

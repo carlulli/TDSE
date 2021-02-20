@@ -9,7 +9,10 @@ TDIR="./test"
 # compiler flags:
 #  -g    adds debugging information to the executable file
 #  -Wall turns on most, but not all, compiler warnings
-CFLAGS="-g -Wall -Werror=implicit-function-declaration -fPIC"
+CFLAGS="-g -Wall"
+# more flags:
+# -Werror=implicit-function-declaration -fPIC
+# -fPIC creates a directory executable.dSYM with some info stuff
 
 # the build target executable:
 TARGET="inttest_linearity"

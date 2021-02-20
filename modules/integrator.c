@@ -16,6 +16,39 @@ static double time_step;
 // static int *initcount=NULL; // should be null pointer???!!!
 static kissfft_struct *kissfft=NULL;
 
+void integrator(double complex* in, double tau, int integ_choice) {
+    /***************************************************************
+   function that calculates the time evolution of input wavefunciton
+   for a chosen integrator method
+
+   remeber to initialze and finish strangsplitting if used
+   ****************************************************************/
+  if (integ_choice == 0) {
+    euler_method(in, tau);
+    printf("Integrator used: Euler Method!\n");
+  }
+  else if (integ_choice == 1) {
+    UCN_method(in, tau);
+    printf("Integrator used: Unitary Crank Nicolson Method!\n");
+  }
+  else if (integ_choice == 2) {
+    // if (ssmcount==NULL) {
+    //   init_strangsplitting();
+    //   ssmcount=1;
+    // }
+    strangsplitting_method(in, tau);
+    printf("Integrator used: Strang Splitting Method!\n");
+  }
+  else {
+    printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"
+  "Remember: Integrator choice is 3rd input when calling inttest_linearity.c.\n "
+  "Euler Method = 1, Unitary Crank-Nicolson Method = 2, Strang Splitting Method = 2\n" );
+
+    exit(-1);
+  }
+}
+
+
 /* takes array and integration step , modifies the array input*/
 void euler_method(double complex *in, double tau) {
   /* uses the geometry.h library to obtain the N number of lattice points */
@@ -42,16 +75,13 @@ void operator(double complex *in, double complex *out) {
 }
 
 /* uses conjugategradient to calculate inverse of the operator it needs */
-void UCN_method(double complex *in,double tau) {
-  //time_step = tau;
+void UCN_method(double complex *in, double tau) {
+  //sets time_step
+  time_step = tau;
   int N = get_N();
   double complex Hnu[N],HHnu[N], nu[N];
   void (*op_ptr)(double complex *, double complex *);
   op_ptr = &operator;
-
-  for(int i = 0; i < N; i++) {
-
-  }
 
   conj_grad(in,nu,(*op_ptr));
 

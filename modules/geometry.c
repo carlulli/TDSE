@@ -12,7 +12,8 @@ and returned from get_functions OR accessed from other files with extern keyword
 static: can not be accessed with extern keyword (safest way)
 */
 static int N=0;
-static double tau=0.0;
+static double time=0.0;
+static int nsteps = 1;
 static int integ_choice=0;
 static int pot_choice=0;
 static int *integcount=NULL;
@@ -31,10 +32,10 @@ void set_params(int argc, char *argv[]){
   // is argc the correct number of args
   // if correct loop from 1 to argc and read argv
   // plan to rewrite for all input parameters!!!!!!
-  if (argc<2) {
+  if (argc<6) {
     printf("[geometry.c | set_params()] ERROR. You forgot to insert program parameters!\n"
-  "\tThe parameters are as follows: [NUM] [tau] [integrator choice] [potential_choice]\n"
-  "\t\tNUM: odd and bigger 0\n" "\t\ttau: some double\n"
+  "\tThe parameters are as follows: [N] [time] [Nsteps] [integrator choice] [potential_choice]\n"
+  "\t\tN: odd and bigger 0\n" "\t\t time < 0 an Nsteps integer\n"
   "\t\tintegrator_choice: 0 = euler method, 1 = Unitary Crank Nicolson Method, 2 = Strang Splitting Method\n"
 "\t\tintegrator_choice: 0 = zero, 1 = harmonic oscillator, 2 = well, 3 = wall\n" );
     exit(-1);
@@ -47,14 +48,15 @@ void set_params(int argc, char *argv[]){
     printf("[ geometry.c| set_params ] NUM has to be > 1 and an odd number!\n");
     exit(-1);
   }
-  if (argv[2] != NULL) { tau=atof(argv[2]); }
-  if (argv[3] != NULL) {
-    integ_choice=atoi(argv[3]);
-    integcount=&integ_choice;
-  }
+  if (argv[2] != NULL) { time = atof(argv[2]); }
+  if (argv[3] != NULL) { nsteps = atoi(argv[3]); }
   if (argv[4] != NULL) {
-    pot_choice=atoi(argv[4]);
-    potcount=&pot_choice;
+    integ_choice = atoi(argv[4]);
+    integcount = &integ_choice;
+  }
+  if (argv[5] != NULL) {
+    pot_choice = atoi(argv[5]);
+    potcount = &pot_choice;
   }
 }
 
@@ -75,20 +77,24 @@ int get_N() {
     return N;
 }
 
-double get_tau() {
-    static double sTAU=0.0;
-    if(tau==0.0) {
-      printf("[ geometry.c| get_tau()] Error! Tau not yet set or tried to set 0 (not possible)!\n");
-      exit(-1);
+double get_time() {
+  static double sTIME=0.0;
+  if(time==0.0) {
+    printf("[ geometry.c| get_time()] Error! Timenot yet set or tried to set 0 (not possible)!\n");
+    exit(-1);
+  }
+  if(sTIME==0.0) { sTIME=time; }
+  else {
+    if((time!=sTIME))  {
+       printf("[ geometry.c| get_time() ] Error! (time) has changed: (%.e) -> (%.e)\n",sTIME,time);
+       exit(-1);
     }
-    if(sTAU==0.0) { sTAU=tau; }
-    else {
-      if((tau!=sTAU))  {
-         printf("[ geometry.c| get_tau() ] Error! (tau) has changed: (%.e) -> (%.e)\n",sTAU,tau);
-         exit(-1);
-      }
-    }
-    return tau;
+  }
+  return time;
+}
+
+double get_nsteps() {
+  return nsteps;
 }
 
 int get_integ_choice() {

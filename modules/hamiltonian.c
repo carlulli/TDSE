@@ -34,6 +34,11 @@ void set_kinetic_params(double m) {
 	}
 
 }
+
+double get_m() {
+	return mass;
+}
+
 /* unfortunate attempt to avoid using set_potential  */
 /*void set_potential(const char* fname, union Potential potential ){
 	if strcmp(fname, "ZERO") == 0 {
@@ -140,6 +145,16 @@ void set_potential(int pot) {
 	set_minV();
 }
 
+double return_V(int n) {
+	if (V == NULL) {
+		printf("[hamiltonian.c | get_V()] ERROR! Memory for Potential nor allocated!\n");
+		exit(0);
+	}
+	else {
+		return V[n];
+	}
+}
+
 void set_Hdefpos() {
 	if (shift == 0) {
 		for(int j = 0; j < N; j++) {
@@ -227,9 +242,9 @@ double  average_kinetic_energy(double complex *psi) {
 	}
 
 void print_hamiltonian_info() {
-	printf("Hamiltonian parameters: \nmass = %f\nN = %d\n", mass, N);
+	printf("\tHamiltonian parameters: \n\t\tmass = %f\n\t\tN = %d\n", mass, N);
 	for(int i = 0; i < N; i++){
-	printf("Potential V[%d] = %f\n",i,V[i]);
+	printf("\t\tPotential V[%d] = %f\n",i,V[i]);
 	}
 }
 

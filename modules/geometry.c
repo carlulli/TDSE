@@ -12,6 +12,11 @@ and returned from get_functions OR accessed from other files with extern keyword
 static: can not be accessed with extern keyword (safest way)
 */
 static int N=0;
+static double tau=0.0;
+static int integ_choice=0;
+static int pot_choice=0;
+static int *integcount=NULL;
+static int *potcount=NULL;
 
 /*
 function set_params
@@ -23,64 +28,99 @@ A;
 eps (tolerance), around 10e-15;
  */
 void set_params(int argc, char *argv[]){
+  // is argc the correct number of args
+  // if correct loop from 1 to argc and read argv
+  // plan to rewrite for all input parameters!!!!!!
+  if (argc<2) {
+    printf("[geometry.c | set_params()] ERROR. You forgot to insert program parameters!\n"
+  "\tThe parameters are as follows: [NUM] [tau] [integrator choice] [potential_choice]\n"
+  "\t\tNUM: odd and bigger 0\n" "\t\ttau: some double\n"
+  "\t\tintegrator_choice: 0 = euler method, 1 = Unitary Crank Nicolson Method, 2 = Strang Splitting Method\n"
+"\t\tintegrator_choice: 0 = zero, 1 = harmonic oscillator, 2 = well, 3 = wall\n" );
+    exit(-1);
+  }
   int val;
   val = atoi(argv[1]);
   if (val > 1 && val % 2) {
     N = val;
   } else {
     printf("[ geometry.c| set_params ] NUM has to be > 1 and an odd number!\n");
-
     exit(-1);
+  }
+  if (argv[2] != NULL) { tau=atof(argv[2]); }
+  if (argv[3] != NULL) {
+    integ_choice=atoi(argv[3]);
+    integcount=&integ_choice;
+  }
+  if (argv[4] != NULL) {
+    pot_choice=atoi(argv[4]);
+    potcount=&pot_choice;
   }
 }
 
-/* This is another way to return N (to try out the adress/reference stuff)
-void get_N(int *pN) {
-    static int sN=0;
-
-    if(N==0)
-    {
-      printf("[ geometry.c| get_N ] Error! Not not yet set!\n");
-      exit(-1);
-    }
-
-    if(sN==0)
-    {
-      sN=N;
-    }
-    else
-    {
-      if((N!=sN))
-      {
-         printf("[ geometry.c| get_N ] Error! (N) has changed: (%d) -> (%d)\n",sN,N);
-         exit(-1);
-      }
-    }
-    (*pN)=N;
-}*/
-
+/* functions that return the parameters and warn if they were changed */
 int get_N() {
     static int sN=0;
-
-    if(N==0)
-    {
-      printf("[ geometry.c| get_N ] Error! Not not yet set!\n");
+    if(N==0) {
+      printf("[ geometry.c| get_N ] Error! N not yet set!\n");
       exit(-1);
     }
-
-    if(sN==0)
-    {
-      sN=N;
-    }
-    else
-    {
-      if((N!=sN))
-      {
+    if(sN==0) { sN=N; }
+    else {
+      if((N!=sN))  {
          printf("[ geometry.c| get_N ] Error! (N) has changed: (%d) -> (%d)\n",sN,N);
          exit(-1);
       }
     }
     return N;
+}
+
+double get_tau() {
+    static double sTAU=0.0;
+    if(tau==0.0) {
+      printf("[ geometry.c| get_tau()] Error! Tau not yet set or tried to set 0 (not possible)!\n");
+      exit(-1);
+    }
+    if(sTAU==0.0) { sTAU=tau; }
+    else {
+      if((tau!=sTAU))  {
+         printf("[ geometry.c| get_tau() ] Error! (tau) has changed: (%.e) -> (%.e)\n",sTAU,tau);
+         exit(-1);
+      }
+    }
+    return tau;
+}
+
+int get_integ_choice() {
+    static int sINTEG_CHOICE=0;
+    if(integcount==NULL) {
+      printf("[ geometry.c| get_integ_choice() ] Error! Integrator_choice not yet set!\n");
+      exit(-1);
+    }
+    if(sINTEG_CHOICE==0) { sINTEG_CHOICE=integ_choice; }
+    else {
+      if((integ_choice!=sINTEG_CHOICE))  {
+         printf("[ geometry.c| get_integ_choice() ] Error! (integ_choice) has changed: (%d) -> (%d)\n",sINTEG_CHOICE,integ_choice);
+         exit(-1);
+      }
+    }
+    return integ_choice;
+}
+
+int get_pot_choice() {
+    static int sPOT_CHOICE=0;
+    if(potcount==NULL) {
+      printf("[ geometry.c| get_pot_choice() ] Error! Potential_choice not yet set!\n");
+      exit(-1);
+    }
+    if(sPOT_CHOICE==0) { sPOT_CHOICE=pot_choice; }
+    else {
+      if((pot_choice!=sPOT_CHOICE))  {
+         printf("[ geometry.c| get_pot_choice() ] Error! (pot_choice) has changed: (%d) -> (%d)\n",sPOT_CHOICE,pot_choice);
+         exit(-1);
+      }
+    }
+    return pot_choice;
 }
 
 /* prints the currently set parameters */

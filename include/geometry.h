@@ -9,14 +9,14 @@ has get_params functions that return the parameters
 void set_params(int argc, char *argv[]);
 /*
 takes input values
-transform input char to int
-assign input int to variables (global?):
-NUM, larger than 1 and odd;
+transform input char to int, double
+NUM, larger than 1 and odd; TAU, integrator_choice, pot_choice
  */
-
-/*void get_N(int *pN);*/
+/* FUNCTIONS that return the params and warn if they changed */
 int get_N();
- /* returns N */
+double get_tau();
+int get_integ_choice();
+int get_pot_choice();
 
 void print_N();
 /* prints the currently set parameters */

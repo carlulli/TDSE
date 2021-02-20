@@ -104,7 +104,8 @@ argv[5] = potential
   }
 
   integrator(left, tau, integrator_choice);
-
+  // printf("DEBUGGING after int use\n");
+  // exit(-1);
   /* Right hand side */
   integrator(psia, tau, integrator_choice);
   integrator(psib, tau, integrator_choice);
@@ -113,11 +114,13 @@ argv[5] = potential
   maxdev = 0.0;
   for(int n = 0; n < N; n++) {
     right[n] = alpha*psia[n] + beta*psib[n];
+    printf("right[n]= %.e + %.e * i\n", creal(right[n]), cimag(right[n]));
+    printf("left[n]= %.e + %.e * i\n", creal(left[n]), cimag(left[n]));
     dev = cabs(left[n] - right[n]);
     if(dev>maxdev)  maxdev=dev;
   }
 
-  printf("\nCalcualted difference for every n: |int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|\n");
+
   printf(
     "Maximum Deviation is=\t%.16e\n"
     "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n", maxdev);

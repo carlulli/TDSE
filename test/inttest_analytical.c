@@ -131,6 +131,7 @@ int main(int argc, char const *argv[]) {
     // if (integrator_choice==2) {init_strangsplitting();}
     for (int k=0;k<=N;k++) {
           set_eigenfunction(psi,k);
+
           copy_wf(psi, left);
           integrator(left, tau, integrator_choice);
           // ev = 2.*sin((M_PI*k)/(2*(N+1)))*sin((M_PI*k)/(2*(N+1)))/mass;
@@ -140,7 +141,7 @@ int main(int argc, char const *argv[]) {
           for (int n=0;n<N;n++) {
              dev=cabs(left[n] - fofE*psi[n]);
              if(dev>maxdev) maxdev=dev;
-             fprintf(fp, "%d\t%.16e\t%d\t%.6e\t%.6e\t%.6e\t%.6e\n", k, maxdev, n, creal(left[n]), cimag(left[n]), creal(fofE*psi[n]), cimag(fofE*psi[n]));
+
           }
           printf("Calculating...\tk= %d\tmaxdev= %.16e\n",k,maxdev);
           // fprintf(fp, "%d\t%.e\n", k, maxdev);

@@ -60,23 +60,17 @@
 \end{abstract}
 
 %  Code intallation & verification
-\section{Code - TISE}\label{code}
+\section{Code - TDSE}\label{code}
 
 % subsection hamiltonian 
-\subsection{Hamiltonian}\label{hmltn}
+\subsection{From TISE}\label{TISE}
 
-\subsection{Main code}\label{main}
-
-%subsection other modules 
-\subsection{Side Modules}
+\subsection{Code Structure}\label{strct}
 
 %
 %subsection compiling and running 
-\subsection{Compiling and Running of the Code}
-After downloading the code from \ref{code} on should have the necessary directory structure saved locally.
-To compile all files on runs the script {\fontfamily{qcr}\selectfont compile.sh} from within TISE directory.
-This creates a {\fontfamily{qcr}\selectfont main.o} inside TISE and executables of every test program inside the test directory.
-Afterwards there exist two ways to run simulations. 
+\subsection{Compiling and Running of the Code}\label{cmplng}
+
 % \begin{enumerate}
 %     \item Run from within TISE \begin{verbatim}
 %         main.o [N] [mass] [potential] [tolerance] [residue]
@@ -89,14 +83,24 @@ Afterwards there exist two ways to run simulations.
 % \end{enumerate}
 
 % section Algorithmic params
-\section{Study of the algorithmic parameters}\label{algrmtc parmtrs}
+\section{Integrators}\label{integrator}
+
+\subsection{Main choices}\label{mainchoices}
+
+e.g. using kissfft etc.
+
+\subsection{Testing}
+% These can be put into subsubsections
+Tests we implemented \\
+Analytical, Linearity, Unitarity, Convergence
+Testing strategy \\
+How to run the test porgrams \\
+Table with test parameters? \\
+What will we know from the test once it is finished \\
+show plots and dicuss why we think the tests were sucessful \\
 
 
-
-%What is the idea behind that?
-%Why do we want to study the parameters?
-%What are we expecting to see?\\
-
+% Example of table in latex
 % \begin{center}
 % \begin{tabular}{c|c|c|c|c}
 %     Potential & N & $\hat{m}$ \\
@@ -108,22 +112,10 @@ Afterwards there exist two ways to run simulations.
 % \end{tabular}
 % \end{center}
 
-\subsection{Zero-Potential}
+
+\section{Investigation of Algorithmic Parameters}\label{algrtmcprmtrs}
 
 
-\subsection{Effect of tolerance on power method}
-The input parameters of the study can be taken from the table for each potential.
-The tolerance was varied from 1 to $10^{-8}$. 
-
-\subsection{Effect of residue on conjugate gradient}
-The input parameters for the simulation are the same as above and can be seen in the table.
-The residue parameters were varied from 1 to $10^{-10}$.
-
-In both cases for high tolerance and residue values the observable values were varying from the cases with smaller tolerance or residue.
-
-\section{Investigation of the Continuum Limit and the Infinite-Volume Limit}\label{finitevolume}
-Compared to the continuum and infinite volume limits of the first project, the dependence is much simpler, when instead of a relativistic Schroedinger equation, the non-relativistic version is implemented, and furthermore there is only one dimension. 
-To investigate the continuum limit the 
 % Example of how to include plots
 % \begin{figure}
 %     \centering
@@ -133,7 +125,7 @@ To investigate the continuum limit the
 % \end{figure}
 
 
-
+\section{Tunneling}
 
 
 \clearpage

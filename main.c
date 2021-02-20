@@ -12,14 +12,14 @@
 #include "integrator.h"
 
 
-#define _FILE_NAME_ "test/inttest_convergence.c"
+#define _FILE_NAME_ "test/main.c"
 static int N = 0;
 
 int main(int argc, char const *argv[]) {
 /****************************************************************
 argv[1] = N
 argv[2] = time
-argv[3] = nsteps
+argv[3] = ntimesteps
 argv[4] = integrator_choice
 argv[5] = potential
 argv[6] = mu
@@ -32,8 +32,8 @@ set_params(argc, (char**) argv);
 double mass = 2.3512;
 N = get_N();
 double time = get_time();
-double nsteps = get_nsteps();
-double tau = time/nsteps;
+double ntimesteps = get_nsteps();
+double tau = time/ntimesteps;
 int integrator_choice = get_integ_choice();
 int pot_choice = get_pot_choice();
 double mu = atof(argv[6]);
@@ -62,10 +62,10 @@ snprintf(
 
 fp = fopen(filename, "w");
 fprintf(fp, "n\tREAL(psi[n])\tIMAG(psi[n])\ttau\taverx\tdeltax\taverp\tdeltap\n");
-for (int j = 0; i < nsteps; j++) {
+for (int q = 0; q < ntimesteps; q++) {
   integrator(psi,tau,integrator_choice);
   for (int i = 0; i < N; i++) {
-  fprintf(fp, "%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\n", creal(psi[i]),cimag(psi[i]),tau*j,get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi));
+  fprintf(fp, "%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\n", creal(psi[i]),cimag(psi[i]),tau*q,get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi));
 }
 fclose(fp);
 

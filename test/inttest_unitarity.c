@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
   print_hamiltonian_info();
 
 
+
   printf("This program is tasked with testing that the various integration methods implement respect the unitarity of the time evolution operator (only those who uphold this property should be ran) \n");
   printf("\nThe program generates a random NON normalized wavefunction. Then it applies the chosen integrator to approximate the time evolution of the wavefunction.\nAt each step (in regard to the parameters passed by the user) the norm is computed and printed on the screen. Here the user can check that the norm is maintained through time (up to a certain tolerance)\n");
   printf("The test passes is all these numbers are < 1e-15\n\nTest params are: N=%d, mass=%f, tau=%.e, integrator_choice=%d\n\n",N, mass, tau,integrator_choice);
@@ -65,6 +66,7 @@ int main(int argc, char *argv[]) {
 
   }
 */
+/* Printing test infos to text file */
 
   return 0;
 }

@@ -20,7 +20,7 @@ LIBS = -Lkissfft -lkissfft-double
 TEST_LIN = inttest_linearity
 TEST_ANAL = inttest_analytical
 TEST_UNI = inttest_unitarity
-# TEST_GAUSS = test_gaussian_wf
+TEST_GAUSS = test_gaussian_wf
 MAIN = main
 
 # variable for the modules
@@ -37,7 +37,7 @@ all:
 		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_LIN).c $(LIBS) -o $(TEST_LIN).exe
 		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_ANAL).c $(LIBS) -o $(TEST_ANAL).exe
 		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_UNI).c $(LIBS) -o $(TEST_UNI).exe
-		# $(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_GAUSS).c $(LIBS) -o $(TEST_GAUSS).exe
+		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_GAUSS).c $(LIBS) -o $(TEST_GAUSS).exe
 
 # maybe its better to compile and link seperately
 # all: $(OBJECT_FILES)

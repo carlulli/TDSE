@@ -168,7 +168,9 @@ void finished_strangsplitting() {
 /* functions to convert double complex to kiss_fft_cpx */
 void double_to_kissfft_cpx(double complex *in, kiss_fft_cpx *out, int N) {
   for (int n=0; n<N; n++) {
+    printf("DEBUGGING integrator in[%d]= %.6e + %.6e * i\n", n, creal(in[n]), cimag(in[n]));
       out[n].r = creal(in[n]);
+          printf("DEBUGGING integrator out[%d]= %.5e + %.5e * i\n", n, (double) out[n].r, (double) out[n].i);
       out[n].i = cimag(in[n]);
       printf("DEBUGGING WHAT\n");
       exit(-1);
@@ -176,6 +178,7 @@ void double_to_kissfft_cpx(double complex *in, kiss_fft_cpx *out, int N) {
 }
 
 void kissfft_cpx_to_double(kiss_fft_cpx *in, double complex *out, int N) {
+
   for (int n=0; n<N; n++) {
     out[n] = (double) (in[n].r) + (double) (in[n].i) * I;
   }
@@ -225,8 +228,10 @@ void strangsplitting_method(double complex *in, double tau) {
   }
 
   printf("DEBUGGING integrator eta_ext_q[1]= %.12e + %.12e * i\n", creal(eta_ext_q[1]), cimag(eta_ext_q[1]));
+  printf("DEBUGGING integrator eta_ext_q[0]= %.12e + %.12e * i\n", creal(eta_ext_q[0]), cimag(eta_ext_q[0]));
   /* 3. part */
   if (kissfft != NULL) {
+
     double_to_kissfft_cpx(eta_ext_q, kissfft->cx_in, 2*N+2);
 
     }

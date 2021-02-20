@@ -136,8 +136,8 @@ argv[4] = potential
   }
 
   integrator(left, tau, integrator_choice);
-  // printf("DEBUGGING after int use\n");
-  // exit(-1);
+  printf("DEBUGGING inttest_linearity after int use\n");
+  exit(-1);
   /* Right hand side */
   integrator(psia, tau, integrator_choice);
   integrator(psib, tau, integrator_choice);

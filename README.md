@@ -13,7 +13,17 @@ This should create a `libkissfft-double.a` (.a for mac and maybe linux?) file
 # Tests
 
 So far both these tests take slightly different inputs. (this will be changed)
-- `inttest-linearity.exe [N] [tau] [integ_choice] [potential_choice]`
-- `inttest-analyitcal.exe [N] [tau] [integ_choice]`
+- `inttest-linearity.exe [N] [time] [ntimestep] [integ_choice] [potential_choice]`
+- `inttest-analyitcal.exe [N] [time] [ntimestep] [integ_choice] [potential_choice]`
+- `inttest-unitarity.exe [N] [time] [ntimestep] [integ_choice] [potential_choice]`
+- `test_gaussian_wf.exe [N] [time] [ntimestep] [integ_choice] [potential_choice] [mu] [dx] [dp]`
 
-Strang splitting method is integ_choice = 2
+## Options
+1 N = > 0 and odd
+2 time = > 0
+3 ntimestep = integer
+4 integ_choice = 0 - Euler Method, 1 - Uintary Crank Nicolson Method, 2 - Strang Splitting Method
+5 potential_choie = 0 - Zero Potential, 1 - Harmonic Oscillator, 2 - Well Potential, 3 - Wall Potential
+6 mu = double
+7 dx = double
+8 dp = double

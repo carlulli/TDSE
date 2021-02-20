@@ -29,14 +29,14 @@ void set_random_wavefunction_NN(double complex* psi, int N) {
   }
 
 
-void set_gaussian_wavefunction(double complex* psi, double mu, double sigma, int N) {
-
+void set_gaussian_wavefunction(double complex* psi, double mu, double dx,double dp, int N) {
 
   for(int i = 0; i < N; i++) {
-    psi[i] = 1/(sqrt(2*M_PI)*sigma)*cexp(-0.5*(i-mu)*(i-mu)/(sigma*sigma));
+    psi[i] = /*1/(sqrt(2*M_PI)*sigma)*/cexp(-1/4*(i-mu)*(i-mu)/(dx*dx) + I*i*dp);
 
   }
+  double normalizer = norm(psi,N);
   for (int i = 0; i < N; i ++) {
-    psi[i]/= norm(psi,N);
+    psi[i]/= normalizer;
   }
 }

@@ -1,6 +1,7 @@
 #ifndef INTEGRATOR_H
 #define INTEGRATOR_H
 
+
 #include "../kissfft/kiss_fft.h"
 
 
@@ -9,8 +10,11 @@ typedef struct {
   kiss_fft_cfg cfg, icfg;
 }kissfft_struct;
 
+/* takes extra parameter intg_choice to choose the type of integrator it uses */
+void integrator(double complex* in, double tau, int integ_choice);
+
 /* error of O(tau^2) */
-void euler_method(double complex *in,double tau);
+void euler_method(double complex *in, double tau);
 
 /* Function used by UCN_method */
 void operator(double complex *in, double complex *out);

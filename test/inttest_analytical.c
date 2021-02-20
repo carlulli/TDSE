@@ -41,37 +41,7 @@ for every k:
   printf k maxdev (out and to file )
 *******************************************************************************/
 
-void integrator(double complex* in, double tau, int integ_choice) {
-    /***************************************************************
-   function that calculates the time evolution of input wavefunciton
-   for a chosen integrator method
 
-   remeber to initialze and finish strangsplitting if used
-   ****************************************************************/
-  if (integ_choice == 0) {
-    euler_method(in, tau);
-    printf("Integrator used: Euler Method!\n");
-  }
-  else if (integ_choice == 1) {
-    UCN_method(in, tau);
-    printf("Integrator used: Unitary Crank Nicolson Method!\n");
-  }
-  else if (integ_choice == 2) {
-    // if (ssmcount==NULL) {
-    //   init_strangsplitting();
-    //   ssmcount=1;
-    // }
-    strangsplitting_method(in, tau);
-    printf("Integrator used: Strang Splitting Method!\n");
-  }
-  else {
-    printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"
-  "Remember: Integrator choice is 3rd input when calling inttest_linearity.c.\n "
-  "Euler Method = 1, Unitary Crank-Nicolson Method = 2, Strang Splitting Method = 2\n" );
-
-    exit(-1);
-  }
-}
 
 void set_sinwave(double complex *psi,int k)
 {
@@ -88,18 +58,12 @@ void copy_wf(double complex *in, double complex *out) {
 }
 
 int main(int argc, char const *argv[]) {
-  /****************************************************************
-  argv[1] = N
-  argv[2] = tau
-  argv[3] = integrator_choice
-  ****************************************************************/
-
 
       /* HERE THE MASS IS HARDCODED */
     set_params(argc, (char**) argv);
     double mass = 2.3512;
     N = get_N();
-    double tau = get_tau();
+    double tau = get_time()/get_nsteps();
     int integrator_choice = get_integ_choice();
     int pot = 0;
     set_kinetic_params(mass);

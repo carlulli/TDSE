@@ -3,8 +3,8 @@
 
 void set_random_wavefunction(double complex* psi, int N);
 
-/* sets a gaussian wave packet with mu mean value and sigma standard deviation */
-void set_gaussian_wavefunction(double complex* psi, double mu, double sigma, int N);
+/* sets a gaussian wave packet with mu mean value and sigma and pbar as standard deviation */
+void set_gaussian_wavefunction(double complex* psi, double mu, double sigma, double pbar, int N);
 
 /* set a non normalized wavefunction  */
 void set_random_wavefunction_NN(double complex* psi, int N);

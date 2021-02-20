@@ -28,23 +28,26 @@ static int N = 0;
 
 *******************************************************************/
 
-int main( int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
-  /* checks that the input parameters are correct */
-  assert(argc == 7, _FILE_NAME_, "inttest_anal","Usage: Please input: [N]  [mass]  [time]  [N-steps]  [integrator]  [potential]\n");
-  /* sets N as the number of lattice points */
-  set_params(argc, argv);
-  set_kinetic_params(atof(argv[2]));
-  /* set potential */
-  set_potential(atoi(argv[5]));
-  /* set the integrator type */
-  int int_type = atoi(argv[4]);
-  /* define tau the time step as time/Nsteps */
-  double time = atof(argv[3]);
-  int nsteps = atoi(argv[4]);
+  /* Here the parameters are passed in the set_params function, which checks the validity */
+  set_params(argc, (char**) argv);
+  /* mass is always hardcoded */
+  double mass = 2.3512;
+  N = get_N();
+  double time = get_time();
+  double nsteps = get_nsteps();
   double tau = time/nsteps;
-  /* sets the N size of the wavefunction psi[N] */
-  int N = get_N();
+  int integrator_choice = get_integ_choice();
+  int pot_choice = get_pot_choice();
+  set_kinetic_params(mass);
+  set_potential(pot_choice);
+  print_hamiltonian_info();
+
+
+  printf("This program is tasked with testing that the various integration methods implement respect the unitarity of the time evolution operator (only those who uphold this property should be ran) \n");
+  printf("\nThe program generates a random NON normalized wavefunction. Then it applies the chosen integrator to approximate the time evolution of the wavefunction.\nAt each step (in regard to the parameters passed by the user) the norm is computed and printed on the screen. Here the user can check that the norm is maintained through time (up to a certain tolerance)\n");
+  printf("The test passes is all these numbers are < 1e-15\n\nTest params are: N=%d, mass=%f, tau=%.e, integrator_choice=%d\n\n",N, mass, tau,integrator_choice);
   double complex psi[N];
   /* the wavefunction generated is not normalized by default */
   set_random_wavefunction_NN(psi,N);
@@ -52,7 +55,7 @@ int main( int argc, char *argv[]) {
   /* Now we apply the integrator chosen by the user,
   we want to check that the time operator is unitary and that psi keeps the same norm!  (not Euler)*/
   for(int i = 0; i < nsteps; i++)
-    if (int_type == 1) {
+    if (integrator_choice == 1) {
       UCN_method(psi,tau);
       printf("Norm of vector at time %f  with UCN_method  = %f\n", i*tau, norm(psi,N));
   }
@@ -62,14 +65,6 @@ int main( int argc, char *argv[]) {
 
   }
 */
-  else {
-    printf("WRONG INTEGRATOR INPUT PLEASE INSERT ONLY [1] for UCN OR [2] for Strang Splitting\n");
-    return(-1);
-  }
-
-
-
-
 
   return 0;
 }

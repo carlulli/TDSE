@@ -31,33 +31,7 @@ for (int q=0; q<Q; q++) { //q is the current multiplication of tau, Q*tau = t
     print( calculated value to some file and/or to terminal)
 }
 *******************************************************************************/
-void integrator(double complex* in, double tau, int integ_choice) {
-    /***************************************************************
-   function that calculates the time evolution of input wavefunciton
-   for a chosen integrator method
-   ****************************************************************/
-  if (integ_choice == 0) {
-    euler_method(in, tau);
-    printf("Integrator used: Euler Method!\n");
-  }
-  else if (integ_choice == 1) {
-    UCN_method(in, tau);
-    printf("Integrator used: Unitary Crank Nicolson Method!\n");
-  }
-  else if (integ_choice == 2) {
-    // init_strangsplitting();
-    strangsplitting_method(in, tau);
-    printf("Integrator used: Strang Splitting Method!\n");
-    // finished_strangsplitting();
-  }
-  else {
-    printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"
-  "Remember: Integrator choice is 3rd input when calling inttest_linearity.c.\n "
-  "Euler Method = 1, Unitary Crank-Nicolson Method = 2, Strang Splitting Method = 2\n" );
 
-  exit(-1);
-  }
-}
 
 
 int main(int argc, char const *argv[]) {
@@ -84,7 +58,7 @@ argv[4] = potential
   srand(time(NULL)); // is called in beginning of the main.c
   set_params(argc, (char**) argv);
   N = get_N();
-  double tau = get_tau();
+  double tau = get_time()/get_nsteps();
   int integrator_choice = get_integ_choice();
   double mass = 2.3512;
   set_kinetic_params(mass);

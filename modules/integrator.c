@@ -1,6 +1,7 @@
 #include <complex.h>
 #include <math.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "integrator.h"
 #include "conjugategradient.h"
@@ -204,16 +205,24 @@ void strangsplitting_method(double complex *in, double tau) {
   for (int n=0; n<N; n++) {
     V[n] = return_V(n);
     eta_q[n] = exp(-0.5*I*tau*V[n])*in[n]; // V(n) is some function that caluclates V(n) from hamiltonian module
+    printf("DEBUGGING integrator eta_q[%d]= %.12e + %.12e * i\n", n, creal(eta_q[n]), cimag(eta_q[n]));
   }
-
+  // printf("DEBUGGING integrator eta_q[1]= %.12e + %.12e * i\n", creal(eta_q[1]), cimag(eta_q[1]));
   /* 2. part */
   for (int n=0; n<2*N+2; n++) {
-    if (n>0 || n<N+1) {eta_ext_q[n] = eta_q[n-1];}
-    else if (n>N+1) {eta_ext_q[n] = -eta_ext_q[(2*N+2)-n];}
-    else {eta_ext_q[n] = 0;}
+    if (n>0 && n<N+1) {eta_ext_q[n] = eta_q[n-1];
+      printf("DEBUGGING [inside extension loop] (first if) eta_ext_q[%d]= %.5e + %.5e * i\n", n, creal(eta_ext_q[n]), cimag(eta_ext_q[n]) );
+    }
+    else if (n>N+1) {eta_ext_q[n] = (-1)*eta_ext_q[(2*N+2)-n];
+    printf("DEBUGGING [inside extension loop] (if else) eta_ext_q[%d]= %.5e + %.5e * i\n", n, creal(eta_ext_q[n]), cimag(eta_ext_q[n]) );
+  }
+    else {
+      eta_ext_q[n] = 0.0 + I * 0.0;
+      printf("DEBUGGING [inside extension loop] (else) eta_ext_q[%d]= %.5e + %.5e * i\n", n, creal(eta_ext_q[n]), cimag(eta_ext_q[n]) );
+    }
   }
 
-
+  printf("DEBUGGING integrator eta_ext_q[1]= %.12e + %.12e * i\n", creal(eta_ext_q[1]), cimag(eta_ext_q[1]));
   /* 3. part */
   if (kissfft != NULL) {
     // for (int n=0; n<2*N+2; n++) {
@@ -222,15 +231,25 @@ void strangsplitting_method(double complex *in, double tau) {
     double_to_kissfft_cpx(eta_ext_q, kissfft->cx_in, 2*N+2);
     }
   else {
-    printf("[integrator.c | strangsplitting_method()] ERROR! FFT Plan not prepared.\n"
-    "init_strangsplitting was probably not called!\n");
-    exit(0);
+    // printf("[integrator.c | strangsplitting_method()] ERROR! FFT Plan not prepared.\n"
+    // "init_strangsplitting was probably not called!\n");
+    // exit(0);
   }
 
+  for (int n=0; n<2*N+2; n++) {
+    printf("DEBUGGING integrator kissfft->cx_in[%d]= %.5e + %.5e * i\n", n, (double) kissfft->cx_in[n].r, (double) kissfft->cx_in[n].i);
+  }
+  // printf("DEBUGGING integrator kissfft->cx_in[1]= %.5e + %.5e * i\n", (double) kissfft->cx_in[1].r, (double) kissfft->cx_in[1].i);
+  printf("DEBUGGING integrator kissfft->cx_in[1] without (double) = %.5e + %.5e * i\n", (double) kissfft->cx_in[1].r, (double) kissfft->cx_in[1].i);
+  printf("DEBUGGING now FFT.\n");
   kiss_fft(kissfft->cfg, kissfft->cx_in, kissfft->cx_out);
-
+  printf("DEBUGGING integrator kissfft->cx_in[1]= %.5e + %.5e * i\n", (double) kissfft->cx_in[1].r, (double) kissfft->cx_in[1].i);
+  printf("DEBUGGING integrator kissfft->cx_out[1]= %.5e + %.5e * i\n", (double) kissfft->cx_out[1].r, (double) kissfft->cx_out[1].i);
+  printf("DEBUGGING integrator kissfft->cx_out[1] without (double) = %.5e + %.5e * i\n", kissfft->cx_out[1].r, kissfft->cx_out[1].i);
   kissfft_cpx_to_double(kissfft->cx_out, chi_hat_q, 2*N+2);
+  printf("DEBUGGING integrator chi_hat_q[1]= %.12e + %.12e * i\n", creal(chi_hat_q[1]), cimag(chi_hat_q[1]));
   for (int k=0; k<2*N+2; k++) {
+    // chi_hat_q[k] *= 1./norm(chi_hat_q, 2*N+2);
     // cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k]; //trouble with datatype??
     // kissfft->cx_in[k] = (kiss_fft_cpx) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2)))*kissfft->cx_out[k];
     /* kissfft->cx_in[k] is of datatype kiss_fft_cpx while kissfft->cx_in[k].r is float (or hopefully if successful: double) so calculation is easier */
@@ -238,12 +257,16 @@ void strangsplitting_method(double complex *in, double tau) {
     // kissfft->cx_in[k].r = (double) 1./(2*N+2)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * kissfft->cx_out[k].r;
     // kissfft->cx_in[k].i = (double) 1./(2*N+2)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * kissfft->cx_out[k].i;
   }
+  printf("DEBUGGING integrator chi_hat_q[1]= %.6e + %.6e * i\n", creal(chi_hat_q[1]), cimag(chi_hat_q[1]));
   double_to_kissfft_cpx(chi_hat_q, kissfft->cx_in, 2*N+2);
-
+  printf("DEBUGGING integrator kissfft->cx_in[1]= %.6e + %.6e * i\n", (double) kissfft->cx_in[1].r, (double) kissfft->cx_in[1].i);
   /* 5. part */
+  printf("DEBUGGING now iFFT.\n");
   kiss_fft(kissfft->icfg, kissfft->cx_in, kissfft->cx_out);
+  printf("DEBUGGING integrator kissfft->cx_out[1]= %.6e + %.6e * i\n", (double) kissfft->cx_out[1].r, (double) kissfft->cx_out[1].i);
 
-  kissfft_cpx_to_double(kissfft->cx_in, chi_q, N);
+  kissfft_cpx_to_double(kissfft->cx_out, chi_q, N);
+  printf("DEBUGGING integrator chi_q[1]= %.6e + %.6e * i\n", creal(chi_q[1]), cimag(chi_q[1]));
   // for (int n=0; n<2*N+2; n++) {
   //   // creal(chi_q[n]) = kissfft->cx_out[n].r; // trouble with data type??
   //   // cimag(chi_q[n]) = kissfft->cx_out[n].i;

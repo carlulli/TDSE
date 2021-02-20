@@ -20,22 +20,19 @@ static int *integcount=NULL;
 static int *potcount=NULL;
 
 /*
-function set_params
-takes input values
-transform input char to int
-assign input int to variables (global?):
+function set_params takes input values and transform input char to int
 NUM, larger than 1 and odd;
-A;
-eps (tolerance), around 10e-15;
+TIME, > 0
+NSTEPS, int
+INTEGRATOR, 0 = euler method, 1 = Unitary Crank Nicolson Method, 2 = Strang Splitting Method
+POTENTIAL, 0 = zero potentail, 1 = hamronic pot, 2 = well, 3 = wall
  */
 void set_params(int argc, char *argv[]){
-  // is argc the correct number of args
-  // if correct loop from 1 to argc and read argv
-  // plan to rewrite for all input parameters!!!!!!
+
   if (argc<6) {
     printf("[geometry.c | set_params()] ERROR. You forgot to insert program parameters!\n"
   "\tThe parameters are as follows: [N] [time] [Nsteps] [integrator choice] [potential_choice]\n"
-  "\t\tN: odd and bigger 0\n" "\t\t time < 0 an Nsteps integer\n"
+  "\t\tN: odd and bigger 0\n" "\t\t time > 0 an Nsteps integer\n"
   "\t\tintegrator_choice: 0 = euler method, 1 = Unitary Crank Nicolson Method, 2 = Strang Splitting Method\n"
 "\t\tintegrator_choice: 0 = zero, 1 = harmonic oscillator, 2 = well, 3 = wall\n" );
     exit(-1);

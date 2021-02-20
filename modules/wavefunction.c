@@ -40,3 +40,7 @@ void set_gaussian_wavefunction(double complex* psi, double mu, double dx,double 
     psi[i]/= normalizer;
   }
 }
+
+double complex random_complex_coefficient() {
+  return 1.0*rand()/RAND_MAX + 1.0*rand()/RAND_MAX*I;
+}

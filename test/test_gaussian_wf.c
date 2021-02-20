@@ -13,7 +13,7 @@
 //#include "integrator.h"
 
 
-#define _FILE_NAME_ "test/inttest_convergence.c"
+#define _FILE_NAME_ "test/test_gaussion_wf.c"
 
 /*********************************************
 1) Generates a gaussian wavepacket with a set of hardcored parameters

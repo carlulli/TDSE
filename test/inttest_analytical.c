@@ -56,6 +56,10 @@ void copy_wf(double complex *in, double complex *out) {
   }
 }
 
+/*******************************************************************************
+Function you run in bash with:
+$ ./inttest_analytical.exe [N] [TIME] [NSTEPS] [INTEGRATOR] [POTENTIAL]
+*******************************************************************************/
 int main(int argc, char const *argv[]) {
 
       /* HERE THE MASS IS HARDCODED */
@@ -108,13 +112,13 @@ int main(int argc, char const *argv[]) {
     // }
 
     FILE *fp;
-    int namesize = 30;
+    int namesize = 50;
     for (int i=1; i<=3; i++) { namesize += strlen(argv[i]); }
     char filename[namesize];
 
     snprintf(
       filename, sizeof(filename),
-      "data/int_anal_test_%s_%s_%s.txt", argv[1], argv[2], argv[3]
+      "data/int_anal_test_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4], argv[5]
     );
 
     fp = fopen(filename, "w");
@@ -147,7 +151,6 @@ int main(int argc, char const *argv[]) {
           // fprintf(fp, "%d\t%.e\n", k, maxdev);
        }
       // if (integrator_choice==2) {finished_strangsplitting();}
-
 
 
     // printf("Calcualted difference || integrator(psi) - fofE*psi || = %.e \n", norm(delta, N));

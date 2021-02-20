@@ -19,7 +19,7 @@ static int N = 0;
 
 1) generate a guassian wavefunction
 2) compute time evolution with the chosen potential and integrator
-3)
+3) print on a file name 
 *******************************************************************/
 
 

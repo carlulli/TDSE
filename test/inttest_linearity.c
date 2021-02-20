@@ -32,7 +32,6 @@ for (int q=0; q<Q; q++) { //q is the current multiplication of tau, Q*tau = t
 }
 *******************************************************************************/
 
-
 int main(int argc, char const *argv[]) {
 /****************************************************************
 argv[1] = N
@@ -51,7 +50,7 @@ argv[4] = potential
   srand(time(NULL)); // is called in beginning of the main.c
   set_params(argc, (char**) argv);
   N = get_N();
-  double tau = get_tau();
+  double tau = get_time()/get_nsteps();
   int integrator_choice = get_integ_choice();
   double mass = 2.3512;
   set_kinetic_params(mass);

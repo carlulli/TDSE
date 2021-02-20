@@ -9,7 +9,7 @@ TDIR="./test"
 # compiler flags:
 #  -g    adds debugging information to the executable file
 #  -Wall turns on most, but not all, compiler warnings
-CFLAGS="-g -Wall -Werror=implicit-function-declaration -fPIC"
+CFLAGS="-g -Wall"
 
 # the build target executable:
 TARGET="inttest_analytical"

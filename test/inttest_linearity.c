@@ -32,8 +32,6 @@ for (int q=0; q<Q; q++) { //q is the current multiplication of tau, Q*tau = t
 }
 *******************************************************************************/
 
-
-
 int main(int argc, char const *argv[]) {
 /****************************************************************
 argv[1] = N
@@ -44,18 +42,12 @@ argv[5] = potential
 
 ****************************************************************/
 
-  // assert(argc==5,_FILE_NAME_,"main","ERROR. Necessary number of input parameters 4!\n
-  // Usage: inttest_linearity {N} {tau} {integrator_choice} {potential_choice}\n
-  // Remember: The executable Name is the first parameter.\n");
 
-  printf("This program calculates: norm(delta) = norm( ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| )\n\n" );
-  // if (argc == 4) {
-  //   printf(
-  //     "\n[ inttest_linearity.c | input parameters ] ERROR. Necessary number of input parameters 4!\n"
-  //     "You have %d!\n" "Remember: The executable Name is the first parameter.\n", argc
-  //   );
-  //   exit(-1);
-  // }
+  printf("This program calculates: maxdev = int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib) )\n"
+    "For random wavefunctions psia and psib and random complex coefficients alpha and beta\n"
+    "If the deviation is small (<10e-14?) the test was successful˜\n"
+  );
+
 
   srand(time(NULL)); // is called in beginning of the main.c
   set_params(argc, (char**) argv);
@@ -99,34 +91,38 @@ argv[5] = potential
 
   printf(
     "Linearity test: coefficients:\n"
-    "\talpha= %.e + %.e * i \n" "\tPsib= %.e + %.e * i\n",
+    "\talpha= %.e + %.e * i \n" "\tPsib= %.e + %.e * i\n\n",
     creal(alpha), cimag(alpha), creal(beta), cimag(beta)
   );
 
   /* Calculate int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib) */
   /* Left hand side */
-  if (integrator_choice==2) {init_strangsplitting();}
+  // if (integrator_choice==2) {init_strangsplitting();}
   for(int n = 0; n < N; n++) {
     left[n] = alpha*psia[n] + beta*psib[n];
+    // printf("1. left[n]= %.e + %.e * i\n", creal(left[n]), cimag(left[n]));
   }
 
   integrator(left, tau, integrator_choice);
-
+  // printf("DEBUGGING after int use\n");
+  // exit(-1);
   /* Right hand side */
   integrator(psia, tau, integrator_choice);
   integrator(psib, tau, integrator_choice);
-  if (integrator_choice==2) {finished_strangsplitting();}
+  // if (integrator_choice==2) {finished_strangsplitting();}
   /* ...and difference */
   maxdev = 0.0;
   for(int n = 0; n < N; n++) {
     right[n] = alpha*psia[n] + beta*psib[n];
+    printf("right[n]= %.e + %.e * i\n", creal(right[n]), cimag(right[n]));
+    printf("left[n]= %.e + %.e * i\n", creal(left[n]), cimag(left[n]));
     dev = cabs(left[n] - right[n]);
     if(dev>maxdev)  maxdev=dev;
   }
 
-  printf("Calcualted difference for every n: |int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|");
+
   printf(
-    "Maximum Deviation is=\t%.e\n"
+    "Maximum Deviation is=\t%.16e\n"
     "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n", maxdev);
 
   /* Printing test infos to text file */
@@ -142,10 +138,10 @@ argv[5] = potential
   fp = fopen(filename, "w");
   fprintf(fp, "n\tREAL(psia[n])\tIMAG(psia[n])\tREAL(psib[n])\tIMAG(psib[n])\n");
   for (int i=0; i<N; i++) {
-    fprintf(fp, "%d\t%.e\t%.e\t%.e\t%.e\n", i, creal(psia[i]), cimag(psia[i]), creal(psib[i]), cimag(psib[i]));
+    fprintf(fp, "%d\t%.6e\t%.6e\t%.6e\t%.6e\n", i, creal(psia[i]), cimag(psia[i]), creal(psib[i]), cimag(psib[i]));
   }
   fprintf(
-    fp, "Coefficients:\n" "alpha = %.e + %.e * i\n" "beta = %.e + %.e * i\n",
+    fp, "Coefficients:\n" "alpha = %.6e + %.6e * i\n" "beta = %.6e + %.6e * i\n",
     creal(alpha), cimag(alpha), creal(beta), cimag(beta)
   );
   if (pot == 0) {fprintf(fp, "Potential used:\tZERO potential\n");}
@@ -158,7 +154,7 @@ argv[5] = potential
   //   fp, "norm(delta) = norm( ||int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib)|| )\n"
   //   "norm(delta) = %.e\n", norm(delta, N)
   // );
-  fprintf(fp, "MAXIMUM DEVIATION =\t%.e\n" "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n", maxdev);
+  fprintf(fp, "MAXIMUM DEVIATION =\t%.16e\n" "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n", maxdev);
 
   fclose(fp);
 
@@ -167,6 +163,8 @@ argv[5] = potential
   free(psib);
   free(left);
   free(right);
+
+  printf("\n Linearity Test FINISHED! \n\n");
 
   return 0;
 }

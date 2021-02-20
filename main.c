@@ -19,7 +19,7 @@ int main(int argc, char const *argv[]) {
 /****************************************************************
 argv[1] = N
 argv[2] = time
-argv[3] = nsteps
+argv[3] = ntimesteps
 argv[4] = integrator_choice
 argv[5] = potential
 argv[6] = mu
@@ -66,6 +66,7 @@ for (int q = 0; q < nsteps; j++) {
   integrator(psi,tau,integrator_choice);
   for (int i = 0; i < N; i++) {
   fprintf(fp, "%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\n", creal(psi[i]),cimag(psi[i]),tau*q,average_state_energy(psi),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi));
+
 }
 fclose(fp);
 

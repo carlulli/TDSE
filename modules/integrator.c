@@ -1,6 +1,7 @@
 #include <complex.h>
 #include <math.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "integrator.h"
 #include "conjugategradient.h"
@@ -10,16 +11,14 @@
 #include "../kissfft/kiss_fft.h"
 // in kiss_fft.h in line 83: changed default from float to double
 
+
 /* time step of the integration method */
 static double time_step;
-// static int *initcount=NULL; // should be null pointer???!!!
-static kissfft_struct *kissfft=NULL;
 
 void integrator(double complex* in, double tau, int integ_choice) {
     /***************************************************************
    function that calculates the time evolution of input wavefunciton
    for a chosen integrator method
-
    remeber to initialze and finish strangsplitting if used
    ****************************************************************/
   if (integ_choice == 0) {
@@ -59,7 +58,6 @@ void euler_method(double complex *in, double tau) {
     in[i] = in[i] - tau*Hpsi[i]*I;
   }
 }
-
 
 
 /* function to use with conjugate_gradient() , applies the operator (1 +t*t/4*H*H) psi and gives back out */
@@ -146,144 +144,82 @@ with init_strangsplitting
 6. calculate psi_q+1 for only n = 0,1,...,N-1
     psi_q+1 = exp(-i*tau*V(n)/2)chi_q(n)
 
-7. After last interation free kiss_fft parameters with
-    strangsplitting_finished
+7. After last interation free kiss_fft parameters
 *******************************************************************************/
-/* function to allocate memory for kissfft_struct elements */
-void alloc_kissfft(kissfft_struct *newfft_ptr, int N) {
-  newfft_ptr->cx_in = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx)*N);
-  newfft_ptr->cx_out = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx)*N);
-  newfft_ptr->cfg = kiss_fft_alloc( N, 0, NULL, NULL);
-  newfft_ptr->icfg = kiss_fft_alloc( N, 1, NULL, NULL);
-  assert(newfft_ptr->cx_in!=NULL); // checks if condition is true, otherwise assert
-  assert(newfft_ptr->cx_out!=NULL);
-}
-
-void free_kissfft(kissfft_struct *newfft_ptr) {
-  // maybe also free cx_in and cx_out???
-  free(newfft_ptr->cx_in);
-  free(newfft_ptr->cx_out);
-  kiss_fft_free(newfft_ptr->cfg);
-  kiss_fft_free(newfft_ptr->icfg);
-}
-
-/* initialize the kiss_fftw parameters necessary for strang splitting */
-void init_strangsplitting() {
-  if (kissfft == NULL) {
-    int N = get_N();
-    kissfft = malloc(sizeof(kissfft_struct));
-    assert(kissfft!=NULL);
-    alloc_kissfft(kissfft, 2*N+2);
-  }
-  else {
-    printf("[integrator.c | init_strangsplitting()] ERROR! KissFFT Struct already allocated!\n");
-
-    exit(-1);
-  }
-}
-
-void finished_strangsplitting() {
-  if (kissfft != NULL) {
-    free_kissfft(kissfft);
-    kissfft = NULL;
-  }
-  else {
-    printf("[integrator.c | init_strangsplitting()] KissFFT struct already freed!!\n");
-
-    exit(-1);
-  }
-}
-
-/* functions to convert double complex to kiss_fft_cpx */
-void double_to_kissfft_cpx(double complex *in, kiss_fft_cpx *out, int N) {
-  for (int n=0; n<N; n++) {
-      out[n].r = creal(in[n]);
-      out[n].i = cimag(in[n]);
-    }
-}
-
-void kissfft_cpx_to_double(kiss_fft_cpx *in, double complex *out, int N) {
-  for (int n=0; n<N; n++) {
-    out[n] = (double) (in[n].r) + (double) (in[n].i) * I;
-  }
-}
-
-
 void strangsplitting_method(double complex *in, double tau) {
   /* in = psi_q and out = psi_q+1 */
-  // struct fft fft;
   int N = get_N();
   double mass;
   mass = get_m(); // function that needs to be defined
-  double complex *eta_q, *eta_ext_q, *chi_q, *chi_hat_q; // safer and cleaner with dynamic allicating
-
-  /* dynamic allication of wavefunctions */
-  eta_q = (double complex*) malloc(sizeof(double complex)*N);
-  eta_ext_q = (double complex*) malloc(sizeof(double complex)*2*N+2);
-  chi_q = (double complex*) malloc(sizeof(double complex)*N);
-  chi_hat_q = (double complex*) malloc(sizeof(double complex)*N);
-  assert(eta_q!=NULL);
-  assert(eta_ext_q!=NULL);
-  assert(chi_q!=NULL);
-  assert(chi_hat_q!=NULL);
 
   double *V;
   V = (double*) malloc(sizeof(double)*N);
   assert(V!=0);
+
+  /* wavefunctions and configuration for fft */
+  kiss_fft_cpx *cx_in, *cx_out;
+  kiss_fft_cfg cfg, icfg;
+
+  cx_in = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx)*(2*N+2));
+  cx_out = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx)*(2*N+2));
+  cfg = kiss_fft_alloc( N, 0, 0, 0);
+  icfg = kiss_fft_alloc( N, 1, 0, 0);
+  assert(cx_in!=NULL); // checks if condition is true, otherwise assert
+  assert(cx_out!=NULL);
+
   /* 1. part */
   for (int n=0; n<N; n++) {
     V[n] = return_V(n);
-    eta_q[n] = exp(-0.5*I*tau*V[n])*in[n]; // V(n) is some function that caluclates V(n) from hamiltonian module
+    in[n] *= exp(-0.5*I*tau*V[n]); // V(n) is some function that caluclates V(n) from hamiltonian module
   }
 
   /* 2. part */
   for (int n=0; n<2*N+2; n++) {
-    if (n>0 || n<N+1) {eta_ext_q[n] = eta_q[n-1];}
-    else if (n>N+1) {eta_ext_q[n] = -eta_ext_q[(2*N+2)-n];}
-    else {eta_ext_q[n] = 0;}
+    if (n>0 && n<N+1) {
+      cx_in[n].r = creal(in[n-1]);
+      cx_in[n].i = cimag(in[n-1]);
+    }
+    else if (n>N+1) {
+      cx_in[n].r = (-1)*cx_in[(2*N+2)-n].r;
+      cx_in[n].i = (-1)*cx_in[(2*N+2)-n].i;
+  }
+    else {
+      cx_in[n].r = 0.0;
+      cx_in[n].i = 0.0;
+    }
   }
 
-
   /* 3. part */
-  if (kissfft != NULL) {
-    // for (int n=0; n<2*N+2; n++) {
-    //     kissfft->cx_in[n].r = creal(eta_ext_q[n]);
-    //     kissfft->cx_in[n].i = cimag(eta_ext_q[n]);
-    double_to_kissfft_cpx(eta_ext_q, kissfft->cx_in, 2*N+2);
-    }
+  if (cx_in != NULL) {  kiss_fft(cfg, cx_in, cx_out); }
   else {
-    printf("[integrator.c | strangsplitting_method()] ERROR! FFT Plan not prepared.\n"
-    "init_strangsplitting was probably not called!\n");
+    printf("[integrator.c | strangsplitting_method()] ERROR! FFT Plan not prepared.\n");
     exit(0);
   }
 
-  kiss_fft(kissfft->cfg, kissfft->cx_in, kissfft->cx_out);
-
-  kissfft_cpx_to_double(kissfft->cx_out, chi_hat_q, 2*N+2);
+  /* 4. part */
   for (int k=0; k<2*N+2; k++) {
-    // cx_in[k] = (double) (2*N+2)^(-1)*exp((I*tau/2*mass)*(-4)*sin^2(M_PI*k/(2*N+2)))*cx_out[k]; //trouble with datatype??
-    // kissfft->cx_in[k] = (kiss_fft_cpx) (2*N+2)^(-1)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2)))*kissfft->cx_out[k];
-    /* kissfft->cx_in[k] is of datatype kiss_fft_cpx while kissfft->cx_in[k].r is float (or hopefully if successful: double) so calculation is easier */
-    chi_hat_q[k] *= (double) (1./(2*N+2)*exp((I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))));
-    // kissfft->cx_in[k].r = (double) 1./(2*N+2)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * kissfft->cx_out[k].r;
-    // kissfft->cx_in[k].i = (double) 1./(2*N+2)*exp((I*tau/(2*mass))*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) * kissfft->cx_out[k].i;
+    cx_out[k].r *= (double) (1./(2*N+2) * exp( (I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) );
+    cx_out[k].i *= (double) (1./(2*N+2) * exp( (I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) );
   }
-  double_to_kissfft_cpx(chi_hat_q, kissfft->cx_in, 2*N+2);
 
   /* 5. part */
-  kiss_fft(kissfft->icfg, kissfft->cx_in, kissfft->cx_out);
-
-  kissfft_cpx_to_double(kissfft->cx_in, chi_q, N);
-  // for (int n=0; n<2*N+2; n++) {
-  //   // creal(chi_q[n]) = kissfft->cx_out[n].r; // trouble with data type??
-  //   // cimag(chi_q[n]) = kissfft->cx_out[n].i;
-  //   chi_q[n] = kissfft->cx_out[n].r + cx_out[k].i * I;
-  // }
+  kiss_fft(icfg, cx_out, cx_in);
 
   /* 6. part */
   // only look at N (or N+1?) values of chi_q with and "moving 1 step back to -1"
-  for (int n=0; n<N+1; n++) {
-    in[n] = exp(-0.5*I*tau*V[n])*chi_q[n+1];
+  // should it be V[n] or V[n+1]?
+  for (int n=0; n<N; n++) {
+    V[n]=return_V(n);
+    in[n] = (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].r + (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].i * I;
+    // creal(in[n]) = (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].r;
+    // cimag(in[n]) = (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].i;
   }
 
+  /* Free allocated memory */
+  free(cx_in);
+  free(cx_out);
+  kiss_fft_free(cfg);
+  kiss_fft_free(icfg);
+
+  printf("... Strang Splitting Method ran once!\n");
 }

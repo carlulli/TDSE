@@ -3,12 +3,13 @@
 #include <math.h>
 #include <complex.h>
 #include <string.h>
+#include <assert.h>
 
 #include "wavefunction.h"
 #include "integrator.h"
 #include "geometry.h"
 #include "linearalgebra.h"
-#include "assert.h"
+// #include "assert.h"
 #include "hamiltonian.h"
 
 #define _FILE_NAME_ "test/inttest_analytical.c"
@@ -31,24 +32,22 @@ H = K + V = K = - 1/2m_hat * laplace
 f(H) = exp(-i*tau_hat*H) -> integrator applied
 f(E) = exp(i*tau_hat/2m_hat*eigenvalue)
 
-create eigenvector phi of laplace as above
+create eigenvector psi of laplace as above
   -> for k = 0,...,N
 
 for every k:
-  calculate phi, int(phi), fofE
+  calculate psi, int(psi), fofE
   for every n:
-    calcualte dev=cabs(left[n] - fofE*phi[n]);
+    calcualte dev=cabs(left[n] - fofE*psi[n]);
   printf k maxdev (out and to file )
 *******************************************************************************/
 
 
 
-void set_sinwave(double complex *psi,int k)
-{
-
-   for(int n=0;n<N;n++)
-      // psi[n]=sin((M_PI*((n+1)*k))/(N+1));
-      psi[n] = sqrt(2./(N+1))*sin((M_PI*(n+1)*k)/(N+1));
+void set_eigenfunction(double complex *psi,int k) {
+  for(int n=0;n<N;n++)
+    // psi[n]=sin((M_PI*((n+1)*k))/(N+1));
+    psi[n] = sqrt(2./(N+1))*sin((M_PI*(n+1)*k)/(N+1));
 }
 
 void copy_wf(double complex *in, double complex *out) {
@@ -86,26 +85,26 @@ int main(int argc, char const *argv[]) {
 
 
 
-    double complex *phi, *left;
+    double complex *psi, *left;
     // double complex *delta;
     double fofE, maxdev, dev;
 
     /* dynamic memory allication (remember to free at the end) */
-    phi = (double complex*) malloc(sizeof(double complex) * N);
+    psi = (double complex*) malloc(sizeof(double complex) * N);
     left = (double complex*) malloc(sizeof(double complex) * N);
     assert(left!=NULL);
-    assert(phi!=NULL);
+    assert(psi!=NULL);
     // delta = (double*) malloc(sizeof(delta) * N);
 
-    /* set phi as eigenvector of laplace
+    /* set psi as eigenvector of laplace
     -> k=1
     */
     // for (int n=0; n<N; n++) {
-    //   phi[n] = sqrt(2./(N+1))*sin(M_PI*(n+1)*k/(N+1));
-    //   left[n] = phi[n]; // copy of phi
+    //   psi[n] = sqrt(2./(N+1))*sin(M_PI*(n+1)*k/(N+1));
+    //   left[n] = psi[n]; // copy of psi
     // }
     // for (int n=0; n<2; n++) {
-    //     printf("First three phi values:\t phi[%d] = %.e + %e * i\n", n, creal(phi[n]), cimag(phi[n]);
+    //     printf("First three psi values:\t psi[%d] = %.e + %e * i\n", n, creal(psi[n]), cimag(psi[n]);
     // }
 
     FILE *fp;
@@ -126,40 +125,40 @@ int main(int argc, char const *argv[]) {
     else if (pot == 3) {fprintf(fp, "Potential used:\tWALL potential\n");}
     else {fprintf(fp, "Potential used:\tERROR\n");}
     fprintf(fp, "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splitting method = 10e^-16\n");
-    // fprintf(fp, "n\tREAL(phi[n])\tIMAG(phi[n])\tmaxdeviation\n");
+    // fprintf(fp, "n\tREAL(psi[n])\tIMAG(psi[n])\tmaxdeviation\n");
     fprintf(fp, "k\tMAXDEVIATION\tn\treal(int(psi))\timag(int(psi))\treal(f(E)*psi)\treal(f(E)*psi)\n");
 
-    if (integrator_choice==2) {init_strangsplitting();}
+    // if (integrator_choice==2) {init_strangsplitting();}
     for (int k=0;k<=N;k++) {
-          set_sinwave(phi,k);
-          copy_wf(phi, left);
+          set_eigenfunction(psi,k);
+
+          copy_wf(psi, left);
           integrator(left, tau, integrator_choice);
           // ev = 2.*sin((M_PI*k)/(2*(N+1)))*sin((M_PI*k)/(2*(N+1)))/mass;
           fofE = exp( (double) (I*tau*(-4)*sin(M_PI*k/(2*(N+1)))*sin(M_PI*k/(2*(N+1)))/mass) );
-          printf("fofE=%.e\n", fofE);
+          // printf("fofE=%.e\n", fofE);
           maxdev=0.0;
-          printf("maxdev = %.e\n", maxdev);
-
           for (int n=0;n<N;n++) {
-             dev=cabs(left[n] - fofE*phi[n]);
+             dev=cabs(left[n] - fofE*psi[n]);
              if(dev>maxdev) maxdev=dev;
-             fprintf(fp, "%d\t%.e\t%d\t%.e\t%.e\t%.e\t%.e\n", k, maxdev, n, creal(left[n]), cimag(left[n]), creal(fofE*phi[n]), cimag(fofE*phi[n]));
+
           }
-          printf("Calculating...\tk= %d\tmaxdev= %.2e\n",k,maxdev);
+          printf("Calculating...\tk= %d\tmaxdev= %.16e\n",k,maxdev);
           // fprintf(fp, "%d\t%.e\n", k, maxdev);
        }
-      if (integrator_choice==2) {finished_strangsplitting();}
+      // if (integrator_choice==2) {finished_strangsplitting();}
 
 
 
-    // printf("Calcualted difference || integrator(phi) - fofE*phi || = %.e \n", norm(delta, N));
+    // printf("Calcualted difference || integrator(psi) - fofE*psi || = %.e \n", norm(delta, N));
     // printf("Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n");
     fclose(fp);
 
     /* Free allicated wavefunctions */
-    free(phi);
+    free(psi);
     free(left);
-    // free(delta);
+
+    printf("\n Analytical Test FINISHED! \n\n");
 
   return 0;
 }

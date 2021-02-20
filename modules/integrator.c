@@ -12,37 +12,6 @@
 // in kiss_fft.h in line 83: changed default from float to double
 
 
-void integrator(double complex* in, double tau, int integ_choice) {
-    /***************************************************************
-   function that calculates the time evolution of input wavefunciton
-   for a chosen integrator method
-
-   remeber to initialze and finish strangsplitting if used
-   ****************************************************************/
-  if (integ_choice == 0) {
-    euler_method(in, tau);
-    printf("Integrator used: Euler Method!\n");
-  }
-  else if (integ_choice == 1) {
-    UCN_method(in, tau);
-    printf("Integrator used: Unitary Crank Nicolson Method!\n");
-  }
-  else if (integ_choice == 2) {
-    // if (ssmcount==NULL) {
-    //   init_strangsplitting();
-    //   ssmcount=1;
-    // }
-    strangsplitting_method(in, tau);
-    printf("Integrator used: Strang Splitting Method!\n");
-  }
-  else {
-    printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"
-  "Remember: Integrator choice is 3rd input when calling inttest_linearity.c.\n "
-  "Euler Method = 1, Unitary Crank-Nicolson Method = 2, Strang Splitting Method = 2\n" );
-
-    exit(-1);
-  }
-}
 /* time step of the integration method */
 static double time_step;
 
@@ -50,7 +19,6 @@ void integrator(double complex* in, double tau, int integ_choice) {
     /***************************************************************
    function that calculates the time evolution of input wavefunciton
    for a chosen integrator method
-
    remeber to initialze and finish strangsplitting if used
    ****************************************************************/
   if (integ_choice == 0) {
@@ -90,7 +58,6 @@ void euler_method(double complex *in, double tau) {
     in[i] = in[i] - tau*Hpsi[i]*I;
   }
 }
-
 
 
 /* function to use with conjugate_gradient() , applies the operator (1 +t*t/4*H*H) psi and gives back out */
@@ -179,7 +146,6 @@ with init_strangsplitting
 
 7. After last interation free kiss_fft parameters
 *******************************************************************************/
-
 void strangsplitting_method(double complex *in, double tau) {
   /* in = psi_q and out = psi_q+1 */
   int N = get_N();
@@ -204,20 +170,40 @@ void strangsplitting_method(double complex *in, double tau) {
   /* 1. part */
   for (int n=0; n<N; n++) {
     V[n] = return_V(n);
-
+    in[n] *= exp(-0.5*I*tau*V[n]); // V(n) is some function that caluclates V(n) from hamiltonian module
   }
-  // printf("DEBUGGING integrator eta_q[1]= %.12e + %.12e * i\n", creal(eta_q[1]), cimag(eta_q[1]));
+
   /* 2. part */
   for (int n=0; n<2*N+2; n++) {
+    if (n>0 && n<N+1) {
+      cx_in[n].r = creal(in[n-1]);
+      cx_in[n].i = cimag(in[n-1]);
+    }
+    else if (n>N+1) {
+      cx_in[n].r = (-1)*cx_in[(2*N+2)-n].r;
+      cx_in[n].i = (-1)*cx_in[(2*N+2)-n].i;
+  }
+    else {
+      cx_in[n].r = 0.0;
+      cx_in[n].i = 0.0;
+    }
+  }
 
+  /* 3. part */
+  if (cx_in != NULL) {  kiss_fft(cfg, cx_in, cx_out); }
   else {
     printf("[integrator.c | strangsplitting_method()] ERROR! FFT Plan not prepared.\n");
     exit(0);
   }
-  printf("DEBUGGING WHAT WHAT\n");
-  exit(-1);
 
+  /* 4. part */
+  for (int k=0; k<2*N+2; k++) {
+    cx_out[k].r *= (double) (1./(2*N+2) * exp( (I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) );
+    cx_out[k].i *= (double) (1./(2*N+2) * exp( (I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) );
+  }
 
+  /* 5. part */
+  kiss_fft(icfg, cx_out, cx_in);
 
   /* 6. part */
   // only look at N (or N+1?) values of chi_q with and "moving 1 step back to -1"
@@ -228,6 +214,7 @@ void strangsplitting_method(double complex *in, double tau) {
     // creal(in[n]) = (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].r;
     // cimag(in[n]) = (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].i;
   }
+
   /* Free allocated memory */
   free(cx_in);
   free(cx_out);

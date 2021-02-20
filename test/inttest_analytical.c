@@ -164,29 +164,24 @@ int main(int argc, char const *argv[]) {
     // fprintf(fp, "n\tREAL(psi[n])\tIMAG(psi[n])\tmaxdeviation\n");
     fprintf(fp, "k\tMAXDEVIATION\tn\treal(int(psi))\timag(int(psi))\treal(f(E)*psi)\treal(f(E)*psi)\n");
 
-    if (integrator_choice==2) {init_strangsplitting();}
+    // if (integrator_choice==2) {init_strangsplitting();}
     for (int k=0;k<=N;k++) {
           set_eigenfunction(psi,k);
-          for (int n=0; n<N; n++) {
-            printf("DEBUGGING inttest_analytical psi[%d]= %.12e + %.12e * i\n", n, creal(psi[n]), cimag(psi[n]));
-          }
           copy_wf(psi, left);
           integrator(left, tau, integrator_choice);
           // ev = 2.*sin((M_PI*k)/(2*(N+1)))*sin((M_PI*k)/(2*(N+1)))/mass;
           fofE = exp( (double) (I*tau*(-4)*sin(M_PI*k/(2*(N+1)))*sin(M_PI*k/(2*(N+1)))/mass) );
-          printf("fofE=%.e\n", fofE);
+          // printf("fofE=%.e\n", fofE);
           maxdev=0.0;
-          printf("maxdev = %.e\n", maxdev);
-
           for (int n=0;n<N;n++) {
              dev=cabs(left[n] - fofE*psi[n]);
              if(dev>maxdev) maxdev=dev;
-             fprintf(fp, "%d\t%.e\t%d\t%.e\t%.e\t%.e\t%.e\n", k, maxdev, n, creal(left[n]), cimag(left[n]), creal(fofE*psi[n]), cimag(fofE*psi[n]));
+             fprintf(fp, "%d\t%.16e\t%d\t%.6e\t%.6e\t%.6e\t%.6e\n", k, maxdev, n, creal(left[n]), cimag(left[n]), creal(fofE*psi[n]), cimag(fofE*psi[n]));
           }
-          printf("Calculating...\tk= %d\tmaxdev= %.2e\n",k,maxdev);
+          printf("Calculating...\tk= %d\tmaxdev= %.16e\n",k,maxdev);
           // fprintf(fp, "%d\t%.e\n", k, maxdev);
        }
-      if (integrator_choice==2) {finished_strangsplitting();}
+      // if (integrator_choice==2) {finished_strangsplitting();}
 
 
 
@@ -197,7 +192,8 @@ int main(int argc, char const *argv[]) {
     /* Free allicated wavefunctions */
     free(psi);
     free(left);
-    // free(delta);
+
+    printf("\n Analytical Test FINISHED! \n\n");
 
   return 0;
 }

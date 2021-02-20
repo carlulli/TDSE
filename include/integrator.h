@@ -3,11 +3,7 @@
 
 #include "../kissfft/kiss_fft.h"
 
-
-typedef struct {
-  kiss_fft_cpx *cx_in, *cx_out;
-  kiss_fft_cfg cfg, icfg;
-}kissfft_struct;
+void integrator(double complex* in, double tau, int integ_choice);
 
 /* error of O(tau^2) */
 void euler_method(double complex *in,double tau);

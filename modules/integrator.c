@@ -11,6 +11,38 @@
 #include "../kissfft/kiss_fft.h"
 // in kiss_fft.h in line 83: changed default from float to double
 
+
+void integrator(double complex* in, double tau, int integ_choice) {
+    /***************************************************************
+   function that calculates the time evolution of input wavefunciton
+   for a chosen integrator method
+
+   remeber to initialze and finish strangsplitting if used
+   ****************************************************************/
+  if (integ_choice == 0) {
+    euler_method(in, tau);
+    printf("Integrator used: Euler Method!\n");
+  }
+  else if (integ_choice == 1) {
+    UCN_method(in, tau);
+    printf("Integrator used: Unitary Crank Nicolson Method!\n");
+  }
+  else if (integ_choice == 2) {
+    // if (ssmcount==NULL) {
+    //   init_strangsplitting();
+    //   ssmcount=1;
+    // }
+    strangsplitting_method(in, tau);
+    printf("Integrator used: Strang Splitting Method!\n");
+  }
+  else {
+    printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"
+  "Remember: Integrator choice is 3rd input when calling inttest_linearity.c.\n "
+  "Euler Method = 1, Unitary Crank-Nicolson Method = 2, Strang Splitting Method = 2\n" );
+
+    exit(-1);
+  }
+}
 /* time step of the integration method */
 static double time_step;
 

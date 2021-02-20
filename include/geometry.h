@@ -6,6 +6,8 @@ has get_params functions that return the parameters
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+
+/* [N] [TIME] [NSTEPS] [INTEGRATOR] [POTENTIAL] */
 void set_params(int argc, char *argv[]);
 /*
 takes input values
@@ -14,7 +16,8 @@ NUM, larger than 1 and odd; TAU, integrator_choice, pot_choice
  */
 /* FUNCTIONS that return the params and warn if they changed */
 int get_N();
-double get_tau();
+double get_time();
+double get_nsteps();
 int get_integ_choice();
 int get_pot_choice();
 

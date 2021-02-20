@@ -58,7 +58,6 @@ double get_m() {
 */
 
 /* sets the potential tied to a number passed by the user */
-
 void set_coulomb_potential() {
 	int i;
 	for (i = 1 ; i < N / 2 ; i++) {
@@ -98,6 +97,7 @@ void set_well_potential() {
 	}
 }
 
+
 void set_wall_potential() {
 	double eps = 1;
 	for(int j = 0; j < N; j++) {
@@ -108,8 +108,8 @@ void set_wall_potential() {
 		}
 	}
 }
-/* makes the hamiltonian definite positive by shifting V by the lowest point */
 
+/* makes the hamiltonian definite positive by shifting V by the lowest point */
 void set_minV() {
 	double minV = 0;
 	for(int i = 0; i < N; i++) {
@@ -121,7 +121,6 @@ void set_minV() {
 }
 
 void set_potential(int pot) {
-
 	if(pot == 0) {
 		set_zero_potential();
 		printf("[hamiltonian.c | set_potential()] Chosen POTENTIAL: Zero-potential \n");
@@ -175,8 +174,8 @@ double get_minV() {
 	return min;
 }
 
-void H(double complex *in, double complex *out) {
 
+void H(double complex *in, double complex *out) {
 	double complex delta[N];
 	int i;
 
@@ -187,13 +186,13 @@ void H(double complex *in, double complex *out) {
 	delta[0] = in[1] -2*in[0]; //Boundary conditions
 	delta[N-1] = in[N-2] -2*in[N-1];
 
-
 	for (i = 0; i < N; i++) {//applies H to input vector
 
 		 out[i] = - 1 / (2 * mass) * (delta[i]) + V[i] * in[i]; //writes into the output vector
 
 	 }
 }
+
 
 void H_defpos(double complex *in, double complex *out) {
 	if(shift == 0) {
@@ -203,15 +202,13 @@ void H_defpos(double complex *in, double complex *out) {
 }
 
 
-
 double average_state_energy(double complex *psi) {
 	double complex Hpsi[N];
 	H(psi,Hpsi);
 
 	return creal(scalar_product(psi, Hpsi,N) / norm(psi,N)*norm(psi,N));
-
-
 }
+
 
 double  average_kinetic_energy(double complex *psi) {
 	double complex delta[N];
@@ -230,8 +227,8 @@ double  average_kinetic_energy(double complex *psi) {
   }
 
 	return creal(scalar_product(psi,delta,N) / norm(psi,N)*norm(psi,N));
-
 	}
+
 
 	double average_potential_energy(double complex *psi) {
 		double complex Vpsi[N];
@@ -241,11 +238,13 @@ double  average_kinetic_energy(double complex *psi) {
 		return creal(scalar_product(psi,Vpsi,N)/norm(psi,N)*norm(psi,N));
 	}
 
+
 void print_hamiltonian_info() {
 	printf("\tHamiltonian parameters: \n\t\tmass = %f\n\t\tN = %d\n", mass, N);
 	for(int i = 0; i < N; i++){
 	printf("\t\tPotential V[%d] = %f\n",i,V[i]);
 	}
 }
+
 
 void free_V() { free(V);}

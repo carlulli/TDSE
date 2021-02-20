@@ -170,6 +170,8 @@ void double_to_kissfft_cpx(double complex *in, kiss_fft_cpx *out, int N) {
   for (int n=0; n<N; n++) {
       out[n].r = creal(in[n]);
       out[n].i = cimag(in[n]);
+      printf("DEBUGGING WHAT\n");
+      exit(-1);
     }
 }
 
@@ -225,16 +227,16 @@ void strangsplitting_method(double complex *in, double tau) {
   printf("DEBUGGING integrator eta_ext_q[1]= %.12e + %.12e * i\n", creal(eta_ext_q[1]), cimag(eta_ext_q[1]));
   /* 3. part */
   if (kissfft != NULL) {
-    // for (int n=0; n<2*N+2; n++) {
-    //     kissfft->cx_in[n].r = creal(eta_ext_q[n]);
-    //     kissfft->cx_in[n].i = cimag(eta_ext_q[n]);
     double_to_kissfft_cpx(eta_ext_q, kissfft->cx_in, 2*N+2);
+
     }
   else {
-    // printf("[integrator.c | strangsplitting_method()] ERROR! FFT Plan not prepared.\n"
-    // "init_strangsplitting was probably not called!\n");
-    // exit(0);
+    printf("[integrator.c | strangsplitting_method()] ERROR! FFT Plan not prepared.\n"
+    "init_strangsplitting was probably not called!\n");
+    exit(0);
   }
+  printf("DEBUGGING WHAT WHAT\n");
+  exit(-1);
 
   for (int n=0; n<2*N+2; n++) {
     printf("DEBUGGING integrator kissfft->cx_in[%d]= %.5e + %.5e * i\n", n, (double) kissfft->cx_in[n].r, (double) kissfft->cx_in[n].i);
@@ -267,11 +269,7 @@ void strangsplitting_method(double complex *in, double tau) {
 
   kissfft_cpx_to_double(kissfft->cx_out, chi_q, N);
   printf("DEBUGGING integrator chi_q[1]= %.6e + %.6e * i\n", creal(chi_q[1]), cimag(chi_q[1]));
-  // for (int n=0; n<2*N+2; n++) {
-  //   // creal(chi_q[n]) = kissfft->cx_out[n].r; // trouble with data type??
-  //   // cimag(chi_q[n]) = kissfft->cx_out[n].i;
-  //   chi_q[n] = kissfft->cx_out[n].r + cx_out[k].i * I;
-  // }
+
 
   /* 6. part */
   // only look at N (or N+1?) values of chi_q with and "moving 1 step back to -1"

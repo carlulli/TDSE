@@ -116,6 +116,9 @@ int main(int argc, char const *argv[]) {
     fprintf(fp, "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splitting method = 10e^-16\n");
     fprintf(fp, "\nk\tMAXDEVIATION\tn\treal(int(psi))\timag(int(psi))\treal(f(E)*psi)\timag(f(E)*psi)\n");
 
+/*******************************************************************************
+Actual running the test
+*******************************************************************************/
     // if (integrator_choice==2) {init_strangsplitting();}
     double complex arg, fofE, rdummy, idummy;
     for (int k=0;k<=N;k++) {
@@ -133,8 +136,8 @@ int main(int argc, char const *argv[]) {
             rdummy = creal(fofE)*creal(psi[n])-cimag(fofE)*cimag(psi[n]);
         		idummy = creal(fofE)*cimag(psi[n])+cimag(fofE)*creal(psi[n]);
         		right[n] = rdummy + idummy * I;
-            printf("DEBUG 1 psi[%d] = %.4e + i * %.4e\n", n, creal(psi[n]), cimag(psi[n]));
-            printf("DEBUG 1 right[%d] = %.4e + i * %.4e\n", n, creal(right[n]), cimag(right[n]));
+            printf("DEBUGGING 1 psi[%d] = %.4e + i * %.4e\n", n, creal(psi[n]), cimag(psi[n]));
+            printf("DEBUGGING 1 right[%d] = %.4e + i * %.4e\n", n, creal(right[n]), cimag(right[n]));
             // multply_dcx_element(&fofE, &psi[n], &right[n]); // doesnt work with the pointers correctly
             dev=cabs(left[n] - right[n]);
             if(dev>maxdev) maxdev=dev;

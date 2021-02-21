@@ -67,7 +67,7 @@ void operator(double complex *in, double complex *out) {
   H(in,Hin);
   H(Hin,HHin);
   for(int i = 0; i < N; i ++) {
-    out[i] = in[i] + 1/4*time_step*time_step*HHin[i];
+    out[i] = in[i] + 1./4.*time_step*time_step*HHin[i];
   }
 }
 
@@ -86,7 +86,7 @@ void UCN_method(double complex *in, double tau) {
   H(Hnu,HHnu);
 
   for(int i = 0; i < N; i++) {
-    in[i] = nu[i] - tau*Hnu[i]*I -1/4*tau*tau*HHnu[i];
+    in[i] = nu[i] - tau*Hnu[i]*I -1./4.*tau*tau*HHnu[i];
   }
 }
 
@@ -102,7 +102,7 @@ make KISSFFT_DATATYPE=double
 to install
 needed one more package: libpng
 i got this through homebrew (for apple)
-dont know if really necessary
+dont know if really necessary -> only for some tool
 
 0. Before first iteration.
 initialize strangsplitting to initialize the kiss_fft parameters

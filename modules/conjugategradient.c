@@ -11,8 +11,8 @@ hardcoded an accuracy for when set_res does not get called
 static is just a safety so the accuracy variable can only be adressed inside
 this program
 */
-static double accuracy=1.e-5;
-// static double accuracy=1.e-10;
+// static double accuracy=1.e-5;
+static double accuracy=1.e-14;
 // double accuracy;
 
 /*******************************************************************************

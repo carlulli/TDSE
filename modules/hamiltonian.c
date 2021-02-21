@@ -103,7 +103,7 @@ void set_well_potential() {
 
 
 void set_wall_potential() {
-	double eps = 1;
+	double eps = 10;
 	for(int j = 0; j < N; j++) {
 		V[j] = 0;
 		while(j > (N+1)/2 && j < (N+5)/2) {

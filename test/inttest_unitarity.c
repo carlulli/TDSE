@@ -47,27 +47,26 @@ int main(int argc, char *argv[]) {
 
 
   printf("This program is tasked with testing that the various integration methods implement respect the unitarity of the time evolution operator (only those who uphold this property should be ran) \n");
-  printf("\nThe program generates a random NON normalized wavefunction. Then it applies the chosen integrator to approximate the time evolution of the wavefunction.\nAt each step (in regard to the parameters passed by the user) the norm is computed and printed on the screen. Here the user can check that the norm is maintained through time (up to a certain tolerance)\n");
-  printf("The test passes is all these numbers are < 1e-15\n\nTest params are: N=%d, mass=%f, tau=%.e, integrator_choice=%d\n\n",N, mass, tau,integrator_choice);
-  double complex psi[N];
+  printf("\nThe program generates a random NON normalized wavefunction. Then it applies the chosen integrator to approximate the time evolution of the wavefunction.\n\n");
+  printf("The Test params are: N=%d, mass=%f, tau=%.e, integrator_choice=%d\n\n",N, mass, tau, integrator_choice);
+  double complex psi[N],psi_in[N];
   /* the wavefunction generated is not normalized by default */
   set_random_wavefunction_NN(psi,N);
-  printf("Computing the norm of the vector psi \n ||psi|| = %f \n", norm(psi,N));
+  for(int i = 0; i < N; i++) {
+    psi_in[i] = psi[i];
+  }
+  //printf("Computing the norm of the vector psi \n ||psi|| = %f \n", norm(psi,N));
   /* Now we apply the integrator chosen by the user,
   we want to check that the time operator is unitary and that psi keeps the same norm!  (not Euler)*/
-  for(int i = 0; i < nsteps; i++)
-    if (integrator_choice == 1) {
-      UCN_method(psi,tau);
-      printf("Norm of vector at time %f  with UCN_method  = %f\n", i*tau, norm(psi,N));
+  for(int i = 0; i < N; i++) {
+  integrator(psi,tau,integrator_choice);
   }
-  /*  else if( int_type == 2) {
-      splitting_method(psi,tau);
-      printf("Norm of vector at time %f   with splitting_method  = %f\n",i*tau, norm(psi,N));
+  printf("| ||psi(tf)|| - ||psi(ti)|| | = %.12e\ttau = %f\tint_method = %d\n",abs(norm(psi,N)-norm(psi_in,N)),tau,integrator_choice);
+  }
 
-  }
-*/
+
   /* Printing test infos to text file */
-  /* Printing test infos to text file
+  /*
   FILE *fp;
   int namesize = 60;
   for (int i=1; i<=8; i++) { namesize += strlen(argv[i]); }
@@ -85,7 +84,6 @@ int main(int argc, char *argv[]) {
     fprintf(fp, "%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\n", creal(psi[i]),cimag(psi[i]),tau*q,average_state_energy(psi),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi));
   }
   fclose(fp);
-
   */
   return 0;
 }

@@ -69,6 +69,7 @@ int main(int argc, char *argv[]) {
   integrator(psi, tau, integrator_choice);
   printf("Norm of vector at time 1 step  with integrator:%d \n ||psi|| = %f\n", integrator_choice, norm(psi,N));
   printf("\n||psiold|| - ||psinew|| = %.6e\n", fabs(norm(psi_cp, N)-norm(psi,N)));
+  // printf("\n||psiold|| - ||psinew||/||psiold|| = %.6e\n", fabs((norm(psi_cp, N)-norm(psi,N))/norm(psi_cp,N)));
 
   /* Printing test infos to text file */
   FILE *fp;

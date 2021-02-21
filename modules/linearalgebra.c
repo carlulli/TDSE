@@ -110,7 +110,7 @@ void multply_dcx_wf(double complex *a, double complex *b, double complex *c, int
 		for (int n=0;n<N;n++) {
 			creal(dummy) = creal(a[n])*creal(b[n])-cimag(a[n])*cimag(b[n]);
 			cimag(dummy) = creal(a[n])*cimag(b[n])+cimag(a[n])*creal(b[n]);
-			c[n] = creal(dummy) + cimag(dummy) * I;
+			c[n] = creal(dummy) + cimag(dummy) * I; // c[n] = dummy[n] should be equivalent
 		}
 }
 
@@ -122,5 +122,5 @@ void multply_dcx_element(double complex a, double complex b, double complex c) {
 
 		creal(dummy) = creal(a)*creal(b)-cimag(a)*cimag(b);
 		cimag(dummy) = creal(a)*cimag(b)+cimag(a)*creal(b);
-		c = creal(dummy) + cimag(dummy) * I;
+		c = creal(dummy) + cimag(dummy) * I; // c = dummy should be equivalent
 }

@@ -52,4 +52,5 @@ Mkfile.old
 dkms.conf
 
 # stuff i want to keep locally
-# keeplocal
+keeplocal
+data

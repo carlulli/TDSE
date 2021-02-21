@@ -168,9 +168,11 @@ void strangsplitting_method(double complex *in, double tau) {
   assert(cx_out!=NULL);
 
   /* 1. part */
+  double complex dummy;
   for (int n=0; n<N; n++) {
     V[n] = return_V(n);
-    in[n] *= exp(-0.5*I*tau*V[n]); // V(n) is some function that caluclates V(n) from hamiltonian module
+    dummy = cos(0.5*tau*V[n])-I*sin(0.5*tau*V[n]); // is exp(-I*0.5*V[n]);
+    multply_dcx_element(in[n], dummy, in[n]);
   }
 
   /* 2. part */
@@ -198,8 +200,8 @@ void strangsplitting_method(double complex *in, double tau) {
 
   /* 4. part */
   for (int k=0; k<2*N+2; k++) {
-    cx_out[k].r *= (double) (1./(2*N+2) * exp( (I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) );
-    cx_out[k].i *= (double) (1./(2*N+2) * exp( (I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) );
+    cx_out[k].r *= (double) (1./(2*N+2) * cexp( (I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) );
+    cx_out[k].i *= (double) (1./(2*N+2) * cexp( (I*tau/2*mass)*(-4)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))) );
   }
 
   /* 5. part */
@@ -210,11 +212,9 @@ void strangsplitting_method(double complex *in, double tau) {
   // should it be V[n] or V[n+1]?
   for (int n=0; n<N; n++) {
     V[n]=return_V(n);
-    in[n] = (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].r + (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].i * I;
-    // creal(in[n]) = (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].r;
-    // cimag(in[n]) = (double) exp(-0.5*I*tau*V[n])*cx_in[n+1].i;
+    dummy = cos(0.5*tau*V[n])-I*sin(0.5*tau*V[n]); // is exp(-I*0.5*V[n]);
+    multply_dcx_element(in[n], dummy, in[n]);
   }
-
   /* Free allocated memory */
   free(cx_in);
   free(cx_out);

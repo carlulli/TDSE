@@ -99,3 +99,28 @@ void randvec(double complex* vec, int M)
         vec[i] = 1.0 * rand()/RAND_MAX + 1.0 * rand()/RAND_MAX *I;
     }
 }
+
+/*******************************************************************************
+function to correctly multiply two complex vectors c = a + b
+for only one compontent pass N=1
+*******************************************************************************/
+void multply_dcx_wf(double complex *a, double complex *b, double complex *c, int N) {
+		double complex dummy;
+
+		for (int n=0;n<N;n++) {
+			creal(dummy) = creal(a[n])*creal(b[n])-cimag(a[n])*cimag(b[n]);
+			cimag(dummy) = creal(a[n])*cimag(b[n])+cimag(a[n])*creal(b[n]);
+			c[n] = creal(dummy) + cimag(dummy) * I;
+		}
+}
+
+/*******************************************************************************
+function to correctly multiply two complex vectors c = a + b element wise
+*******************************************************************************/
+void multply_dcx_element(double complex a, double complex b, double complex c) {
+		double complex dummy;
+
+		creal(dummy) = creal(a)*creal(b)-cimag(a)*cimag(b);
+		cimag(dummy) = creal(a)*cimag(b)+cimag(a)*creal(b);
+		c = creal(dummy) + cimag(dummy) * I;
+}

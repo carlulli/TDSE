@@ -8,7 +8,7 @@
 #include "hamiltonian.h"
 #include "wavefunction.h"
 #include "integrator.h"
-#include "assert.h"
+
 
 #define _FILE_NAME_ "test/inttest_unitarity.c"
 
@@ -66,7 +66,26 @@ int main(int argc, char *argv[]) {
 
   }
 */
-/* Printing test infos to text file */
+  /* Printing test infos to text file */
+  /* Printing test infos to text file
+  FILE *fp;
+  int namesize = 60;
+  for (int i=1; i<=8; i++) { namesize += strlen(argv[i]); }
+  char filename[namesize];
 
+  snprintf(
+    filename, sizeof(filename),
+    "data/int_uni_test_%s_%s_%s_%s_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3],argv[4],argv[5],argv[6],argv[7],argv[8]);
+
+  fp = fopen(filename, "w");
+  fprintf(fp, "n\tREAL(psi[n])\tIMAG(psi[n])\ttau\taveren\taverx\tdeltax\taverp\tdeltap\n");
+  for (int q = 0; q < nsteps; j++) {
+    integrator(psi,tau,integrator_choice);
+    for (int i = 0; i < N; i++) {
+    fprintf(fp, "%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\n", creal(psi[i]),cimag(psi[i]),tau*q,average_state_energy(psi),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi));
+  }
+  fclose(fp);
+
+  */
   return 0;
 }

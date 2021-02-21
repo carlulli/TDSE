@@ -40,5 +40,8 @@ int main(int argc, char *argv[]) {
   }
   printf("norm = %f",norm(psi,N));
 
+  free(psi);
+
+  printf("GAUSSIAN test finished.\n");
   return 0;
 }

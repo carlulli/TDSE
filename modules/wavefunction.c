@@ -44,3 +44,9 @@ void set_gaussian_wavefunction(double complex* psi, double mu, double dx,double 
 double complex random_complex_coefficient() {
   return 1.0*rand()/RAND_MAX + 1.0*rand()/RAND_MAX*I;
 }
+
+void copy_wf(double complex *in, double complex *out, int N) {
+  for (int n=0; n<N; n++) {
+    out[n] = in[n];
+  }
+}

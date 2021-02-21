@@ -60,18 +60,22 @@ argv[5] = potential
   set_potential(pot);
   print_hamiltonian_info();
 
-  double complex *psia, *psib;
+  double complex *psia, *psib, *psia_cp, *psib_cp;
   double complex alpha,  beta;
   double complex *left, *right;
   double maxdev, dev;
 
   /* dynamic memory allication (remember to free at the end) */
-  psia = (double complex*) malloc(sizeof(double) * N);
-  psib = (double complex*) malloc(sizeof(double) * N);
-  left = (double complex*) malloc(sizeof(double) * N);
-  right = (double complex*) malloc(sizeof(double) * N);
+  psia = (double complex*) malloc(sizeof(double complex) * N);
+  psib = (double complex*) malloc(sizeof(double complex) * N);
+  psia_cp = (double complex*) malloc(sizeof(double complex) * N);
+  psib_cp = (double complex*) malloc(sizeof(double complex) * N);
+  left = (double complex*) malloc(sizeof(double complex) * N);
+  right = (double complex*) malloc(sizeof(double complex) * N);
   assert(psia!=NULL); // check of condition is true else -> aboort?
   assert(psib!=NULL);
+  assert(psia_cp!=NULL);
+  assert(psib_cp!=NULL);
   assert(left!=NULL);
   assert(right!=NULL);
 
@@ -98,10 +102,12 @@ argv[5] = potential
   /* Calculate int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib) */
   /* Left hand side */
   // if (integrator_choice==2) {init_strangsplitting();}
+
   for(int n = 0; n < N; n++) {
     left[n] = alpha*psia[n] + beta*psib[n];
-    // printf("1. left[n]= %.e + %.e * i\n", creal(left[n]), cimag(left[n]));
   }
+  copy_wf(psia, psia_cp, N);
+  copy_wf(psib, psib_cp, N);
 
   integrator(left, tau, integrator_choice);
   // printf("DEBUGGING after int use\n");
@@ -114,16 +120,15 @@ argv[5] = potential
   maxdev = 0.0;
   for(int n = 0; n < N; n++) {
     right[n] = alpha*psia[n] + beta*psib[n];
-    printf("right[n]= %.e + %.e * i\n", creal(right[n]), cimag(right[n]));
-    printf("left[n]= %.e + %.e * i\n", creal(left[n]), cimag(left[n]));
+    printf("left[%d]= %.4e + %.4e * i\t\t right[%d]= %.4e + %.4e * i\n", n,creal(left[n]), cimag(left[n]), n,creal(right[n]), cimag(right[n]));
     dev = cabs(left[n] - right[n]);
-    if(dev>maxdev)  maxdev=dev;
+    if(dev>maxdev)  {maxdev=dev;}
   }
 
-
   printf(
-    "Maximum Deviation is=\t%.16e\n"
-    "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n", maxdev);
+    "\nMaximum Deviation is=\t%.6e\n"
+    "Tolerances for to check for success:\t" "\teuler method = \t" "\tUCM method = \t" "\tstrang splittin method = 10e^-16\n", maxdev);
+
 
   /* Printing test infos to text file */
   FILE *fp;
@@ -136,14 +141,18 @@ argv[5] = potential
     "data/int_lin_test_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4] ,argv[5]);
 
   fp = fopen(filename, "w");
-  fprintf(fp, "n\tREAL(psia[n])\tIMAG(psia[n])\tREAL(psib[n])\tIMAG(psib[n])\n");
+  fprintf(fp, "n\tREAL(psia_cp[n]))\tIMAG(psia_cp[n]))\tREAL(psib_cp[n]))\tIMAG(psib_cp[n]))\n");
   for (int i=0; i<N; i++) {
-    fprintf(fp, "%d\t%.6e\t%.6e\t%.6e\t%.6e\n", i, creal(psia[i]), cimag(psia[i]), creal(psib[i]), cimag(psib[i]));
+    fprintf(fp, "%d\t%.6e\t%.6e\t%.6e\t%.6e\n", i, creal(psia_cp[i]), cimag(psia_cp[i]), creal(psib_cp[i]), cimag(psib_cp[i]));
   }
-  fprintf(
-    fp, "Coefficients:\n" "alpha = %.6e + %.6e * i\n" "beta = %.6e + %.6e * i\n",
-    creal(alpha), cimag(alpha), creal(beta), cimag(beta)
-  );
+  fprintf(fp, "\nn\tREAL(int(psia[n]))\tIMAG(int(psia[n]))\tREAL(int(psib[n]))\tIMAG(int(psib[n]))\tREAL(alpha)\tIMAG(alpha)\tREAL(beta)\tIMAG(beta)\n");
+  for (int i=0; i<N; i++) {
+    fprintf(fp, "%d\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n", i, creal(psia[i]), cimag(psia[i]), creal(psib[i]), cimag(psib[i]),creal(alpha), cimag(alpha), creal(beta), cimag(beta));
+  }
+  fprintf(fp, "\nn\tREAL(int(left[n]))\tIMAG(int(left[n]))\tREAL(int(right[n]))\tIMAG(int(right[n]))\n");
+  for (int i=0; i<N; i++) {
+    fprintf(fp, "%d\t%.6e\t%.6e\t%.6e\t%.6e\n", i, creal(left[i]), cimag(left[i]), creal(right[i]), cimag(right[i]));
+  }
   if (pot == 0) {fprintf(fp, "Potential used:\tZERO potential\n");}
   else if (pot == 1) {fprintf(fp, "Potential used:\tHARMONIC potential\n");}
   else if (pot == 2) {fprintf(fp, "Potential used:\tWELL potential\n");}
@@ -161,6 +170,8 @@ argv[5] = potential
   /* Free allicated wavefunctions */
   free(psia);
   free(psib);
+  free(psia_cp);
+  free(psib_cp);
   free(left);
   free(right);
 

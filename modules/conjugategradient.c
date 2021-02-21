@@ -6,9 +6,14 @@
 #include "hamiltonian.h"
 #include "linearalgebra.h"
 
-
-
-double accuracy;
+/*
+hardcoded an accuracy for when set_res does not get called
+static is just a safety so the accuracy variable can only be adressed inside
+this program
+*/
+static double accuracy=1.e-5;
+// static double accuracy=1.e-10;
+// double accuracy;
 
 /*******************************************************************************
 set_res initialzes the residue value by assigning the 5th input parameter to res
@@ -195,7 +200,7 @@ for(int n = 0; n < N; n++) {
     }
     if (sqrt(rsnew) > accuracy)     // uses accuracy
         {
-            printf("Attention: The desired attention was not achieved, \n instead we only got to %.15f \n", sqrt(rsnew));
+            printf("[conjugategradient.c | conj_grad()] Attention: The desired accuracy was not achieved, \n \t\t\tinstead we only got to %.15f \n", sqrt(rsnew));
             exit(-1);
         }
     return;

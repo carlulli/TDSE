@@ -21,11 +21,10 @@ static int N = 0;
 // calculate the norm and write it on a file as a function of time paramter discretized via the time step tau
 
 
-0) take as input     N    TIME    ITER    INTEGRATOR    POTENTIAL
+0) take as input     N    TIME    NSTEP    INTEGRATOR    POTENTIAL
 1) generate a random normalized initial wavefunction
 2) compute the norm of psi(t) and check that it is still 1
 3)print on terminal and or on a file
-
 *******************************************************************/
 
 int main(int argc, char *argv[]) {

@@ -44,17 +44,12 @@ for every k:
 
 
 
-void set_eigenfunction(double complex *psi,int k) {
+void set_eigenfunction(double complex *psi, int k) {
   for(int n=0;n<N;n++)
     // psi[n]=sin((M_PI*((n+1)*k))/(N+1));
     psi[n] = sqrt(2./(N+1))*sin((M_PI*(n+1)*k)/(N+1));
 }
 
-void copy_wf(double complex *in, double complex *out) {
-  for (int n=0; n<N; n++) {
-    out[n] = in[n];
-  }
-}
 
 /*******************************************************************************
 Function you run in bash with:
@@ -89,31 +84,21 @@ int main(int argc, char const *argv[]) {
 
 
 
-    double complex *psi, *left;
-    // double complex *delta;
-    double fofE, maxdev, dev;
+    double complex *psi, *left, *right, fofE;
+    double maxdev, dev;
 
     /* dynamic memory allication (remember to free at the end) */
     psi = (double complex*) malloc(sizeof(double complex) * N);
     left = (double complex*) malloc(sizeof(double complex) * N);
+    right = (double complex*) malloc(sizeof(double complex) * N);
     assert(left!=NULL);
     assert(psi!=NULL);
-    // delta = (double*) malloc(sizeof(delta) * N);
+    assert(right!=NULL);
 
-    /* set psi as eigenvector of laplace
-    -> k=1
-    */
-    // for (int n=0; n<N; n++) {
-    //   psi[n] = sqrt(2./(N+1))*sin(M_PI*(n+1)*k/(N+1));
-    //   left[n] = psi[n]; // copy of psi
-    // }
-    // for (int n=0; n<2; n++) {
-    //     printf("First three psi values:\t psi[%d] = %.e + %e * i\n", n, creal(psi[n]), cimag(psi[n]);
-    // }
-
+    /* opening the file for the output */
     FILE *fp;
     int namesize = 50;
-    for (int i=1; i<=3; i++) { namesize += strlen(argv[i]); }
+    for (int i=1; i<=5; i++) { namesize += strlen(argv[i]); }
     char filename[namesize];
 
     snprintf(
@@ -129,37 +114,34 @@ int main(int argc, char const *argv[]) {
     else if (pot == 3) {fprintf(fp, "Potential used:\tWALL potential\n");}
     else {fprintf(fp, "Potential used:\tERROR\n");}
     fprintf(fp, "Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splitting method = 10e^-16\n");
-    // fprintf(fp, "n\tREAL(psi[n])\tIMAG(psi[n])\tmaxdeviation\n");
-    fprintf(fp, "k\tMAXDEVIATION\tn\treal(int(psi))\timag(int(psi))\treal(f(E)*psi)\treal(f(E)*psi)\n");
+    fprintf(fp, "\nk\tMAXDEVIATION\tn\treal(int(psi))\timag(int(psi))\treal(f(E)*psi)\timag(f(E)*psi)\n");
 
     // if (integrator_choice==2) {init_strangsplitting();}
     for (int k=0;k<=N;k++) {
           set_eigenfunction(psi,k);
-
-          copy_wf(psi, left);
+          // for (int i=0;i<N;i++) { psi[i]=1.+I; }
+          copy_wf(psi, left, N);
           integrator(left, tau, integrator_choice);
+
           // ev = 2.*sin((M_PI*k)/(2*(N+1)))*sin((M_PI*k)/(2*(N+1)))/mass;
-          fofE = exp( (double) (I*tau*(-4)*sin(M_PI*k/(2*(N+1)))*sin(M_PI*k/(2*(N+1)))/mass) );
-          // printf("fofE=%.e\n", fofE);
+          fofE = cexp( (I*tau*(-2)*sin(M_PI*k/(2*(N+1)))*sin(M_PI*k/(2*(N+1)))/mass) );
+          printf("fofE= %.4e + %.4e * I\n", creal(fofE), cimag(fofE));
           maxdev=0.0;
           for (int n=0;n<N;n++) {
-             dev=cabs(left[n] - fofE*psi[n]);
-             if(dev>maxdev) maxdev=dev;
-
+            dev=cabs(left[n] - (fofE*psi[n]));
+            if(dev>maxdev) maxdev=dev;
+            fprintf(fp, "%d\t%.6e\t%d\t%.6e\t%.6e\t%.6e\t%.6e\n", k, maxdev, n, creal(left[n]), cimag(left[n]), creal(fofE*psi[n]), cimag(fofE*psi[n]));
           }
-          printf("Calculating...\tk= %d\tmaxdev= %.16e\n",k,maxdev);
-          // fprintf(fp, "%d\t%.e\n", k, maxdev);
+          printf("...Calculating\tk= %d\tmaxdev= %.6e\n",k,maxdev);
        }
       // if (integrator_choice==2) {finished_strangsplitting();}
 
-
-    // printf("Calcualted difference || integrator(psi) - fofE*psi || = %.e \n", norm(delta, N));
-    // printf("Tolerances for to check for success:\n" "\teuler method = \n" "\tUCM method = \n" "\tstrang splittin method = 10e^-16\n");
     fclose(fp);
 
     /* Free allicated wavefunctions */
     free(psi);
     free(left);
+    free(right);
 
     printf("\n Analytical Test FINISHED! \n\n");
 

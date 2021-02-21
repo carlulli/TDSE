@@ -20,4 +20,15 @@ void multAtimesv( double complex* in, double complex* out);
 /* function for random vector */
 void randvec(double complex* vec, int M);
 
+/*******************************************************************************
+function to correctly multiply two complex vectors c = a + b for all n<N
+for only one compontent pass N=1
+*******************************************************************************/
+void multply_dcx_wf(double complex *a, double complex *b, double complex *c, int N);
+
+/*******************************************************************************
+function to correctly multiply two complex vectors c = a + b element wise
+*******************************************************************************/
+void multply_dcx_element(double complex a, double complex b, double complex c)
+
 #endif // !LinearAlgebra_h

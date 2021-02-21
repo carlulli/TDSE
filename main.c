@@ -63,11 +63,11 @@ snprintf(
   "data/gauss_wf_wp_%s_%s_%s_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
 
 fp = fopen(filename, "w");
-fprintf(fp, "n\tREAL(psi[n])\tIMAG(psi[n])\ttau\taverx\tdeltax\taverp\tdeltap\n");
+fprintf(fp, "\nREAL(psi[n])\tIMAG(psi[n])\ttau\taverx\tdeltax\taverp\tdeltap\n");
 for (int q = 0; q < ntimesteps; q++) {
   integrator(psi,tau*q,integrator_choice);
   for (int i = 0; i < N; i++) {
-  fprintf(fp,"%.e\t%.e\t%.e\t%.e\t%.e\t%.e\t%.e\n",creal(psi[i]),cimag(psi[i]),tau*q,get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi));
+  fprintf(fp,"%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\n",creal(psi[i]),cimag(psi[i]),tau*q,get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi));
   }
 }
 fclose(fp);

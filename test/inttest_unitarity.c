@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
   double mass = 2.3512;
   N = get_N();
   double ttime = get_time();
-  double nsteps = get_nsteps();
+  int nsteps = get_nsteps();
   double tau = ttime/nsteps;
   int integrator_choice = get_integ_choice();
   int pot_choice = get_pot_choice();

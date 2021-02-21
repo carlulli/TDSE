@@ -17,7 +17,7 @@ NUM, larger than 1 and odd; TAU, integrator_choice, pot_choice
 /* FUNCTIONS that return the params and warn if they changed */
 int get_N();
 double get_time();
-double get_nsteps();
+int get_nsteps();
 int get_integ_choice();
 int get_pot_choice();
 

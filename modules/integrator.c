@@ -234,5 +234,5 @@ void strangsplitting_method(double complex *in, double tau) {
   kiss_fft_free(cfg);
   kiss_fft_free(icfg);
 
-  printf("... Strang Splitting Method ran once!\n");
+  // printf("... Strang Splitting Method ran once!\n");
 }

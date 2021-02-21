@@ -67,7 +67,7 @@ void operator(double complex *in, double complex *out) {
   H(in,Hin);
   H(Hin,HHin);
   for(int i = 0; i < N; i ++) {
-    out[i] = in[i] + 1/4*time_step*time_step*in[i];
+    out[i] = in[i] + 1/4*time_step*time_step*HHin[i];
   }
 }
 

@@ -33,15 +33,15 @@ INCLUDE = -I $(IDIR) -I $(KDIR)
 # this is the first target all with the depency OBJECT_FILES
 # it will look for the depency before running the below command(s)
 all:
-		# $(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(MAIN).c $(LIBS) -o $(MAIN).exe
+		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(MAIN).c $(LIBS) -o $(MAIN).exe
 		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_LIN).c $(LIBS) -o $(TEST_LIN).exe
 		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_ANAL).c $(LIBS) -o $(TEST_ANAL).exe
-		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_UNI).c $(LIBS) -o $(TEST_UNI).exe
+		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_UNI).c $(LIBS) -o $(TEST_UNI).exe 
 		$(CC) $(CFLAGS) $(INCLUDE) $(MODULES) $(TDIR)$(TEST_GAUSS).c $(LIBS) -o $(TEST_GAUSS).exe
 
 # maybe its better to compile and link seperately
 # all: $(OBJECT_FILES)
 # 		echo: "Linking: $@ ($(CC))"
 # 		$(CC) -o $(TEST_LIN)
-#
+
 # $(OBJECT_FILES):

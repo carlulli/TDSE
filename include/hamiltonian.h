@@ -25,6 +25,7 @@ void set_zero_potential();
 void set_harmonic_potential();
 void set_well_potential();
 void set_wall_potential();
+void set_wall_potential_detail(double eps, int a, int b);
 void set_coulomb_potential();
 
 void set_minV();

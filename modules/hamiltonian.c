@@ -102,13 +102,22 @@ void set_wall_potential() {
 	double eps = 1;
 	for(int j = 0; j < N; j++) {
 		V[j] = 0;
-		while(j > (N+1)/2 && j < N) {
+		while(j > (N+1)/2 && j < (N+5)/2) {
 			V[j] =  eps;
 			j += 1;
 		}
 	}
 }
 
+void set_wall_potential_detail(double eps, int a, int b) {
+	for(int j = 0; j < N; j++) {
+		V[j] = 0;
+		while(j > a && j < b) {
+			V[j] =  eps;
+			j += 1;
+		}
+	}
+}
 /* makes the hamiltonian definite positive by shifting V by the lowest point */
 void set_minV() {
 	double minV = 0;

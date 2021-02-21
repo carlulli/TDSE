@@ -15,4 +15,4 @@ double get_avgsqr_p(double complex *psi);
 
 double Normal(double complex *psi);
 
-endif //OBSERVABLES_H
+#endif //OBSERVABLES_H

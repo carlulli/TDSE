@@ -46,7 +46,7 @@ void set_params(int argc, char *argv[]){
     exit(-1);
   }
   if (argv[2] != NULL) { time = atof(argv[2]); }
-  if (argv[3] != NULL) { nsteps = atoi(argv[3]); }
+  if (argv[3] != NULL) { nsteps = atoi(argv[3]); }/* if time implement integer check */
   if (argv[4] != NULL) {
     integ_choice = atoi(argv[4]);
     integcount = &integ_choice;
@@ -90,7 +90,7 @@ double get_time() {
   return time;
 }
 
-double get_nsteps() {
+int get_nsteps() {
   return nsteps;
 }
 

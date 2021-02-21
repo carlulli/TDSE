@@ -29,6 +29,6 @@ void multply_dcx_wf(double complex *a, double complex *b, double complex *c, int
 /*******************************************************************************
 function to correctly multiply two complex vectors c = a + b element wise
 *******************************************************************************/
-void multply_dcx_element(double complex a, double complex b, double complex c)
+void multply_dcx_element(double complex a, double complex b, double complex c);
 
 #endif // !LinearAlgebra_h

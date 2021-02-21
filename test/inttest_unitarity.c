@@ -64,11 +64,7 @@ int main(int argc, char *argv[]) {
   printf("Computing the norm of the vector psi \n ||psi|| = %f \n", norm(psi,N));
   /* Now we apply the integrator chosen by the user,
   we want to check that the time operator is unitary and that psi keeps the same norm!  (not Euler)*/
-  for(int i = 0; i < nsteps; i++)
-    if (integrator_choice == 1) {
-      UCN_method(psi,tau);
-      printf("Norm of vector at time %f  with UCN_method  = %f\n", i*tau, norm(psi,N));
-  }
+
   /* isnt one time step enough? */
   integrator(psi, tau, integrator_choice);
   printf("Norm of vector at time 1 step  with integrator:%d \n ||psi|| = %f\n", integrator_choice, norm(psi,N));

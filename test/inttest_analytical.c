@@ -143,9 +143,9 @@ int main(int argc, char const *argv[]) {
           printf("...Calculating\tk= %d\tmaxdev= %.6e\n",k,maxdev);
        }
       // if (integrator_choice==2) {finished_strangsplitting();}
-
+    fprintf(fp, "\n\nFINAL MAXDEV = %.12e\t\n", maxdev);
     fclose(fp);
-
+    printf( "\n\nFINAL MAXDEV = %.12e\t\n", maxdev);
     /* Free allicated wavefunctions */
     free(psi);
     free(left);

@@ -84,7 +84,7 @@ int main(int argc, char const *argv[]) {
 
 
 
-    double complex *psi, *left, *right, fofE;
+    double complex *psi, *left, *right;
     double maxdev, dev;
 
     /* dynamic memory allication (remember to free at the end) */
@@ -117,6 +117,7 @@ int main(int argc, char const *argv[]) {
     fprintf(fp, "\nk\tMAXDEVIATION\tn\treal(int(psi))\timag(int(psi))\treal(f(E)*psi)\timag(f(E)*psi)\n");
 
     // if (integrator_choice==2) {init_strangsplitting();}
+    double complex arg, fofE, rdummy, idummy;
     for (int k=0;k<=N;k++) {
           set_eigenfunction(psi,k);
           // for (int i=0;i<N;i++) { psi[i]=1.+I; }
@@ -124,13 +125,20 @@ int main(int argc, char const *argv[]) {
           integrator(left, tau, integrator_choice);
 
           // ev = 2.*sin((M_PI*k)/(2*(N+1)))*sin((M_PI*k)/(2*(N+1)))/mass;
-          fofE = cexp( (I*tau*(-2)*sin(M_PI*k/(2*(N+1)))*sin(M_PI*k/(2*(N+1)))/mass) );
+          arg = ((-2) * tau * sin(M_PI*k/(2*(N+1))) * sin(M_PI*k/(2*(N+1)))) / mass;
+          fofE = cos(arg) + I * sin(arg);
           printf("fofE= %.4e + %.4e * I\n", creal(fofE), cimag(fofE));
           maxdev=0.0;
           for (int n=0;n<N;n++) {
-            dev=cabs(left[n] - (fofE*psi[n]));
+            rdummy = creal(fofE)*creal(psi[n])-cimag(fofE)*cimag(psi[n]);
+        		idummy = creal(fofE)*cimag(psi[n])+cimag(fofE)*creal(psi[n]);
+        		right[n] = rdummy + idummy * I;
+            printf("DEBUG 1 psi[%d] = %.4e + i * %.4e\n", n, creal(psi[n]), cimag(psi[n]));
+            printf("DEBUG 1 right[%d] = %.4e + i * %.4e\n", n, creal(right[n]), cimag(right[n]));
+            // multply_dcx_element(&fofE, &psi[n], &right[n]); // doesnt work with the pointers correctly
+            dev=cabs(left[n] - right[n]);
             if(dev>maxdev) maxdev=dev;
-            fprintf(fp, "%d\t%.6e\t%d\t%.6e\t%.6e\t%.6e\t%.6e\n", k, maxdev, n, creal(left[n]), cimag(left[n]), creal(fofE*psi[n]), cimag(fofE*psi[n]));
+            fprintf(fp, "%d\t%.6e\t%d\t%.6e\t%.6e\t%.6e\t%.6e\n", k, maxdev, n, creal(left[n]), cimag(left[n]), creal(right[n]), cimag(right[n]));
           }
           printf("...Calculating\tk= %d\tmaxdev= %.6e\n",k,maxdev);
        }

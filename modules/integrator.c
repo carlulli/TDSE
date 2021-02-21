@@ -168,11 +168,14 @@ void strangsplitting_method(double complex *in, double tau) {
   assert(cx_out!=NULL);
 
   /* 1. part */
-  double complex exparg1;
+  double complex exparg1, rdummy1, idummy1;
   for (int n=0; n<N; n++) {
     V[n] = return_V(n);
     exparg1 = cos(0.5*tau*V[n])-I*sin(0.5*tau*V[n]); // is exp(-I*0.5*V[n]);
-    multply_dcx_element(in[n], exparg1, in[n]);
+    // multply_dcx_element(in[n], exparg1, in[n]);
+    rdummy1 = creal(in[n])*creal(exparg1)-cimag(in[n])*cimag(exparg1);
+		idummy1 = creal(in[n])*cimag(exparg1)+cimag(in[n])*creal(exparg1);
+		in[n] = rdummy1 + idummy1 * I; // c = dummy should be equivalent
   }
 
   /* 2. part */
@@ -199,16 +202,16 @@ void strangsplitting_method(double complex *in, double tau) {
   }
 
   /* 4. part */
-  double complex arg,  exparg2, dummy2; // multiple dummys to be sure (even if more memory allocated)
+  double complex arg,  exparg2, rdummy2, idummy2; // multiple dummys to be sure (even if more memory allocated)
   for (int k=0; k<2*N+2; k++) {
     arg = ((-2)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))*tau) / mass; // without I
     exparg2 = ( cos(arg) + I * sin(arg) ) / (2*N+2); // 1 / (2*N+2) for Noramlization (tested in helloworld program)
     // can't use multply_dcx_element as cx_in[k] is type kiss_fft_cpx not double complex
     // but cx_in[k].r and cx_in[k].i are type double
-    creal(dummy2) = cx_out[k].r * creal(exparg2) - cx_out[k].i * cimag(exparg2);
-		cimag(dummy2) = cx_out[k].r * cimag(exparg2) + cx_out[k].i * creal(exparg2);
-		cx_out[k].r = creal(dummy2);
-    cx_out[k].i = cimag(dummy2);
+    rdummy2 = cx_out[k].r * creal(exparg2) - cx_out[k].i * cimag(exparg2);
+		idummy2 = cx_out[k].r * cimag(exparg2) + cx_out[k].i * creal(exparg2);
+		cx_out[k].r = rdummy2;
+    cx_out[k].i = idummy2;
   }
 
   /* 5. part */
@@ -217,13 +220,13 @@ void strangsplitting_method(double complex *in, double tau) {
   /* 6. part */
   // only look at N (or N+1?) values of chi_q with and "moving 1 step back to -1"
   // should it be V[n] or V[n+1]?
-  double complex exparg3, dummy3;
+  double complex exparg3, rdummy3, idummy3;
   for (int n=0; n<N; n++) {
     V[n]=return_V(n);
     exparg3 = cos(0.5*tau*V[n])-I*sin(0.5*tau*V[n]); // is exp(-I*0.5*V[n]);
-    creal(dummy3) = cx_in[n].r * creal(exparg3) - cx_in[n].i * cimag(exparg3);
-		cimag(dummy3) = cx_in[n].r * cimag(exparg3) + cx_in[n].i * creal(exparg3);
-		in[n] = creal(dummy3) + cimag(dummy) * I; // in[n] = dummy3[n] should be equivalent
+    rdummy3 = cx_in[n].r * creal(exparg3) - cx_in[n].i * cimag(exparg3);
+		idummy3 = cx_in[n].r * cimag(exparg3) + cx_in[n].i * creal(exparg3);
+		in[n] = rdummy3 + idummy3 * I; // in[n] = dummy3[n] should be equivalent
   }
   /* Free allocated memory */
   free(cx_in);

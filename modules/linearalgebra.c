@@ -105,22 +105,25 @@ function to correctly multiply two complex vectors c = a + b
 for only one compontent pass N=1
 *******************************************************************************/
 void multply_dcx_wf(double complex *a, double complex *b, double complex *c, int N) {
-		double complex dummy;
+		double complex rdummy, idummy;
 
 		for (int n=0;n<N;n++) {
-			creal(dummy) = creal(a[n])*creal(b[n])-cimag(a[n])*cimag(b[n]);
-			cimag(dummy) = creal(a[n])*cimag(b[n])+cimag(a[n])*creal(b[n]);
-			c[n] = creal(dummy) + cimag(dummy) * I; // c[n] = dummy[n] should be equivalent
+			rdummy = creal(a[n])*creal(b[n])-cimag(a[n])*cimag(b[n]);
+			idummy = creal(a[n])*cimag(b[n])+cimag(a[n])*creal(b[n]);
+			c[n] = rdummy + idummy * I; // c[n] = dummy[n] should be equivalent
 		}
 }
 
 /*******************************************************************************
 function to correctly multiply two complex vectors c = a + b element wise
+DOESNT REALLY WORK some porblem with pointer
 *******************************************************************************/
-void multply_dcx_element(double complex a, double complex b, double complex c) {
-		double complex dummy;
-
-		creal(dummy) = creal(a)*creal(b)-cimag(a)*cimag(b);
-		cimag(dummy) = creal(a)*cimag(b)+cimag(a)*creal(b);
-		c = creal(dummy) + cimag(dummy) * I; // c = dummy should be equivalent
-}
+// void multply_dcx_element(double complex *a, double complex *b, double complex *c) {
+// 		double complex rdummy, idummy;
+// 		printf("DEBUGGING multply_dcx_element a: %.4e + %.4e * i\n", creal(a), cimag(a));
+// 		printf("DEBUGGING multply_dcx_element b: %.4e + %.4e * i\n", creal(b), cimag(b));
+// 		rdummy = creal(*a)*creal(*b)-cimag(*a)*cimag(*b);
+// 		idummy = creal(*a)*cimag(*b)+cimag(*a)*creal(*b);
+// 		*c = rdummy + idummy * I; // c = dummy should be equivalent
+// 		printf("DEBUGGING multply_dcx_element c: %.4e + %.4e * i\n", creal(c), cimag(c));
+// }

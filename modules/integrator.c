@@ -141,7 +141,7 @@ with init_strangsplitting
 5. calculates reverse DFT^-1
     chi_q = DFT-^1(chi_hat_q) for 2N+2
 
-6. calculate psi_q+1 for only n = 0,1,...,N-1
+6. calculate psi_q+1 for only n = 0,1,...,N-1 with returning 0 to -1
     psi_q+1 = exp(-i*tau*V(n)/2)chi_q(n)
 
 7. After last interation free kiss_fft parameters
@@ -150,11 +150,8 @@ void strangsplitting_method(double complex *in, double tau) {
   /* in = psi_q and out = psi_q+1 */
   int N = get_N();
   double mass;
-  mass = get_m(); // function that needs to be defined
-
-  double *V;
-  V = (double*) malloc(sizeof(double)*N);
-  assert(V!=0);
+  mass = get_m();
+  double V;
 
   /* wavefunctions and configuration for fft */
   kiss_fft_cpx *cx_in, *cx_out;
@@ -162,20 +159,20 @@ void strangsplitting_method(double complex *in, double tau) {
 
   cx_in = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx)*(2*N+2));
   cx_out = (kiss_fft_cpx*) malloc(sizeof(kiss_fft_cpx)*(2*N+2));
-  cfg = kiss_fft_alloc( N, 0, 0, 0);
-  icfg = kiss_fft_alloc( N, 1, 0, 0);
+  cfg = kiss_fft_alloc( (2*N+2), 0, 0, 0);
+  icfg = kiss_fft_alloc( (2*N+2), 1, 0, 0);
   assert(cx_in!=NULL); // checks if condition is true, otherwise assert
   assert(cx_out!=NULL);
 
   /* 1. part */
   double complex exparg1, rdummy1, idummy1;
   for (int n=0; n<N; n++) {
-    V[n] = return_V(n);
-    exparg1 = cos(0.5*tau*V[n])-I*sin(0.5*tau*V[n]); // is exp(-I*0.5*V[n]);
+    V = return_V(n);
+    exparg1 = cos(0.5*tau*V)-I*sin(0.5*tau*V); // is exp(-I*0.5*V[n]);
     // multply_dcx_element(in[n], exparg1, in[n]);
     rdummy1 = creal(in[n])*creal(exparg1)-cimag(in[n])*cimag(exparg1);
-		idummy1 = creal(in[n])*cimag(exparg1)+cimag(in[n])*creal(exparg1);
-		in[n] = rdummy1 + idummy1 * I; // c = dummy should be equivalent
+  	idummy1 = creal(in[n])*cimag(exparg1)+cimag(in[n])*creal(exparg1);
+  	in[n] = rdummy1 + idummy1 * I; // c = dummy should be equivalent
   }
 
   /* 2. part */
@@ -195,39 +192,44 @@ void strangsplitting_method(double complex *in, double tau) {
   }
 
   /* 3. part */
-  if (cx_in != NULL) {  kiss_fft(cfg, cx_in, cx_out); }
-  else {
-    printf("[integrator.c | strangsplitting_method()] ERROR! FFT Plan not prepared.\n");
-    exit(0);
-  }
+  kiss_fft(cfg, cx_in, cx_out);
 
   /* 4. part */
-  double complex arg,  exparg2, rdummy2, idummy2; // multiple dummys to be sure (even if more memory allocated)
+  double complex arg,  exparg2, rdummy2, idummy2;
   for (int k=0; k<2*N+2; k++) {
     arg = ((-2)*sin(M_PI*k/(2*N+2))*sin(M_PI*k/(2*N+2))*tau) / mass; // without I
-    exparg2 = ( cos(arg) + I * sin(arg) ) / (2*N+2); // 1 / (2*N+2) for Noramlization (tested in helloworld program)
+    exparg2 = ( cos(arg) + I * sin(arg) ); // 1 / (2*N+2) for Noramlization (tested in helloworld program)
     // can't use multply_dcx_element as cx_in[k] is type kiss_fft_cpx not double complex
     // but cx_in[k].r and cx_in[k].i are type double
     rdummy2 = cx_out[k].r * creal(exparg2) - cx_out[k].i * cimag(exparg2);
-		idummy2 = cx_out[k].r * cimag(exparg2) + cx_out[k].i * creal(exparg2);
-		cx_out[k].r = rdummy2;
+  	idummy2 = cx_out[k].r * cimag(exparg2) + cx_out[k].i * creal(exparg2);
+  	cx_out[k].r = rdummy2;
     cx_out[k].i = idummy2;
   }
 
   /* 5. part */
   kiss_fft(icfg, cx_out, cx_in);
 
+  for (int k=0; k<2*N+2; k++) {
+    cx_in[k].r = cx_in[k].r / (2*N+2);
+    cx_in[k].i = cx_in[k].i / (2*N+2);
+    // cx_in[k].i = cx_in[k].i;
+  }
+  /* scaling (Normalization) */
+  for (int n=0; n<N; n++) {
+    in[n] = cx_in[n+1].r + I*cx_in[n+1].i;
+  }
+
   /* 6. part */
-  // only look at N (or N+1?) values of chi_q with and "moving 1 step back to -1"
-  // should it be V[n] or V[n+1]?
   double complex exparg3, rdummy3, idummy3;
   for (int n=0; n<N; n++) {
-    V[n]=return_V(n);
-    exparg3 = cos(0.5*tau*V[n])-I*sin(0.5*tau*V[n]); // is exp(-I*0.5*V[n]);
-    rdummy3 = cx_in[n].r * creal(exparg3) - cx_in[n].i * cimag(exparg3);
-		idummy3 = cx_in[n].r * cimag(exparg3) + cx_in[n].i * creal(exparg3);
-		in[n] = rdummy3 + idummy3 * I; // in[n] = dummy3[n] should be equivalent
+    V=return_V(n);
+    exparg3 = cos(0.5*tau*V)-I*sin(0.5*tau*V); // is exp(-I*0.5*V[n]);
+    rdummy3 = cx_in[n+1].r * creal(exparg3) - cx_in[n+1].i * cimag(exparg3);
+  	idummy3 = cx_in[n+1].r * cimag(exparg3) + cx_in[n+1].i * creal(exparg3);
+  	in[n] = rdummy3 + idummy3 * I; // in[n] = dummy3[n] should be equivalent
   }
+
   /* Free allocated memory */
   free(cx_in);
   free(cx_out);

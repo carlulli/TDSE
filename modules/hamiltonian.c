@@ -9,7 +9,7 @@
 
 /*parameters of the Hamiltonian that need to be set*/
 static int N;
-static double mass;
+static double mass=0.0;
 static double *V;
 static double min = 0.0; //minimum value of the potential;
 static int shift = 0;
@@ -36,7 +36,11 @@ void set_kinetic_params(double m) {
 }
 
 double get_m() {
-	return mass;
+	if (mass!=0.0) { return mass; }
+	else {
+		printf("[hamiltonian | get_m()] Mass not set!\n");
+		exit(-1);
+	}
 }
 
 /* unfortunate attempt to avoid using set_potential  */

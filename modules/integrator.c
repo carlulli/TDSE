@@ -283,17 +283,17 @@ void strangsplitting_method(double complex *in, double tau) {
     // cx_out[k].r = cx_out[k].r / ((2*N+2)/2);
     // cx_out[k].r = cx_out[k].r / ((2*N+2)/2);
     // cx_out[k].i = cx_out[k].i / ((2*N+2)/2);
-    cx_out[k].r = cx_out[k].r * (2*N+2);
-    cx_out[k].i = cx_out[k].i * (2*N+2);
+    cx_out[k].r = cx_out[k].r / (2*N+2);
+    cx_out[k].i = cx_out[k].i / (2*N+2);
   }
 
   kiss_fft(icfg, cx_out, cx_in);
 
-  for (int k=0; k<N; k++) {
-    // cx_out[k].r = cx_out[k].r / ((2*N+2)/2);
-    // cx_out[k].i = cx_out[k].i / (2*N+2);
-    // cx_out[k].i = cx_out[k].i;
-  }
+  // for (int k=0; k<N; k++) {
+  //   // cx_out[k].r = cx_out[k].r / ((2*N+2)/2);
+  //   // cx_out[k].i = cx_out[k].i / (2*N+2);
+  //   // cx_out[k].i = cx_out[k].i;
+  // }
 
   for (int n=0; n<N; n++) {
     in[n] = cx_in[n+1].r + I*cx_in[n+1].i;

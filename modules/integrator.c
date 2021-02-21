@@ -63,11 +63,11 @@ void euler_method(double complex *in, double tau) {
 /* function to use with conjugate_gradient() , applies the operator (1 +t*t/4*H*H) psi and gives back out */
 void operator(double complex *in, double complex *out) {
   int N = get_N();
-  //double complex Hpsi[N];
-  H(in,in);
-  H(in,in);
+  double complex Hin[N], HHin[N];
+  H(in,Hin);
+  H(Hin,HHin);
   for(int i = 0; i < N; i ++) {
-    out[i] = 1 + 1/4*time_step*time_step*in[i];
+    out[i] = in[i] + 1/4*time_step*time_step*in[i];
   }
 }
 

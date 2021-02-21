@@ -139,7 +139,7 @@ Actual running the test
           else if (integrator_choice==1) { fofE = (1. - I*0.5*tau*arg) / (1. + I*0.5*tau*arg); }
           else if (integrator_choice==2) { fofE = cos(tau*arg) - I * sin(tau*arg); }
 
-          printf("fofE (%d) = %.4e + %.4e * I\n", integrator_choice , creal(fofE), cimag(fofE));
+          // printf("fofE (%d) = %.4e + %.4e * I\n", integrator_choice , creal(fofE), cimag(fofE));
           maxdev=0.0;
           for (int n=0;n<N;n++) {
             rdummy = creal(fofE)*creal(psi[n])-cimag(fofE)*cimag(psi[n]);
@@ -153,7 +153,7 @@ Actual running the test
             fprintf(fp, "%d\t%.6e\t%d\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
             k, dev, n, creal(left[n]), cimag(left[n]), creal(right[n]), cimag(right[n]), creal(psi[n]), cimag(psi[n]) );
           }
-          printf("...Calculating\tk= %d\tmaxdev= %.6e\n",k,maxdev);
+          // printf("...Calculating\tk= %d\tmaxdev= %.6e\n",k,maxdev);
           if(maxdev>finaldev) finaldev=maxdev;
        }
       // if (integrator_choice==2) {finished_strangsplitting();}

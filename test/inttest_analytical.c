@@ -107,6 +107,7 @@ int main(int argc, char const *argv[]) {
     );
 
     fp = fopen(filename, "w");
+
     /* file header  */
     if (pot == 0) {fprintf(fp, "Potential used:\tZERO potential\n");}
     else if (pot == 1) {fprintf(fp, "Potential used:\tHARMONIC potential\n");}
@@ -119,6 +120,7 @@ int main(int argc, char const *argv[]) {
 /*******************************************************************************
 Actual running the test
 *******************************************************************************/
+
     // if (integrator_choice==2) {init_strangsplitting();}
     double complex arg, fofE, rdummy, idummy;
     double finaldev=0.0;

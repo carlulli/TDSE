@@ -66,21 +66,21 @@ int main(int argc, char const *argv[]) {
     int pot = 0;
     set_kinetic_params(mass);
     set_potential(pot);
-    print_hamiltonian_info();
+    // print_hamiltonian_info();
 
 
 
-    printf("\nThis programs checks the eigenvalues and eigenvectors of the Hamiltonian"
-     "with V=0.\n In this case one can calculate analytically that the eigenvectors"
-     "are labeled by an integer index k.\n The k-th eigenvector is given by\n"
-     "   psi(n) = sqrt(2/(N+1)) * sin(pi*(n+1)*k/(N+1))     for n=0,1,2,...,N-1\n"
-     "and the corresponding eigenvalue is given by\n"
-     "   E = -4 * sin( pi*k/(2*(N+1)) )^2\n\n"
-     "For each k=0,1,2,...,N this program prints\n"
-     "   maxdev = max_n | int(H).psi(n) - int(EV).psi(n) |\n"
-     "The test passes is all these numbers are < 1e-15\n\n"
-   "Test prams are: N=%d, mass=%f, tau=%.e, integrator_choice=%d\n\n",
-   N, mass, tau, integrator_choice);
+   //  printf("\nThis programs checks the eigenvalues and eigenvectors of the Hamiltonian"
+   //   "with V=0.\n In this case one can calculate analytically that the eigenvectors"
+   //   "are labeled by an integer index k.\n The k-th eigenvector is given by\n"
+   //   "   psi(n) = sqrt(2/(N+1)) * sin(pi*(n+1)*k/(N+1))     for n=0,1,2,...,N-1\n"
+   //   "and the corresponding eigenvalue is given by\n"
+   //   "   E = -4 * sin( pi*k/(2*(N+1)) )^2\n\n"
+   //   "For each k=0,1,2,...,N this program prints\n"
+   //   "   maxdev = max_n | int(H).psi(n) - int(EV).psi(n) |\n"
+   //   "The test passes is all these numbers are < 1e-15\n\n"
+   // "Test prams are: N=%d, mass=%f, tau=%.e, integrator_choice=%d\n\n",
+   // N, mass, tau, integrator_choice);
 
 
 
@@ -95,6 +95,7 @@ int main(int argc, char const *argv[]) {
     assert(psi!=NULL);
     assert(right!=NULL);
 
+    printf("ANALTEST with NUM=%d, time=%f, nsteps=%d, integ_choice=%d, pot_choice=%d\n", N, get_time(), get_nsteps(), integrator_choice, pot);
     /* opening the file for the output */
     FILE *fp;
     int namesize = 50;
@@ -161,13 +162,13 @@ Actual running the test
       // if (integrator_choice==2) {finished_strangsplitting();}
     fprintf(fp, "\n\nFINAL MAXDEV = %.12e\t\n", finaldev);
     fclose(fp);
-    printf( "\n\nFINAL MAXDEV = %.12e\t\n", finaldev);
+    printf( "FINAL MAXDEV = %.12e\t\n", finaldev);
     /* Free allicated wavefunctions */
     free(psi);
     free(left);
     free(right);
 
-    printf("\n Analytical Test FINISHED! \n\n");
+    // printf("\n Analytical Test FINISHED! \n\n");
 
   return 0;
 }

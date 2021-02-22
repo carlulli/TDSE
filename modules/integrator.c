@@ -23,11 +23,11 @@ void integrator(double complex* in, double tau, int integ_choice) {
    ****************************************************************/
   if (integ_choice == 0) {
     euler_method(in, tau);
-    printf("...Integrator used: Euler Method!\n");
+    // printf("...Integrator used: Euler Method!\n");
   }
   else if (integ_choice == 1) {
     UCN_method(in, tau);
-    printf("...Integrator used: Unitary Crank Nicolson Method!\n");
+    // printf("...Integrator used: Unitary Crank Nicolson Method!\n");
   }
   else if (integ_choice == 2) {
     // if (ssmcount==NULL) {
@@ -35,7 +35,7 @@ void integrator(double complex* in, double tau, int integ_choice) {
     //   ssmcount=1;
     // }
     strangsplitting_method(in, tau);
-    printf("...Integrator used: Strang Splitting Method!\n");
+    // printf("...Integrator used: Strang Splitting Method!\n");
   }
   else {
     printf("[inttest_linearity.c | integrator()] Error! Choice of integrator is out of range!\n"

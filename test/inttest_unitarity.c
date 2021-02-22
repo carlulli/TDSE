@@ -44,31 +44,31 @@ int main(int argc, char *argv[]) {
   int pot_choice = get_pot_choice();
   set_kinetic_params(mass);
   set_potential(pot_choice);
-  print_hamiltonian_info();
+  // print_hamiltonian_info();
 
+  printf("UNITEST with NUM=%d, time=%f, nsteps=%d, integ_choice=%d, pot_choice=%d\n", N, get_time(), get_nsteps(), integrator_choice, pot_choice);
 
-
-  printf("This program tests if the integration methods implemented respect the unitarity of the time evolution operator\n"
-  "(only those who uphold this property should be ran) \n");
-  printf("\nThe program generates a random NON normalized wavefunction.\n"
-  "Then it applies the chosen integrator to approximate the time evolution of the wavefunction.\n"
-  "The norm is computed and printed on the screen and to a file.\n"
-  "Here the user can check that the norm is maintained through time (up to a certain tolerance)\n");
-  printf("The test passes if all these numbers are < 1e-15\n\n"
-  "Test params are: N=%d, mass=%f, tau=%.e, integrator_choice=%d\n\n",N, mass, tau,integrator_choice);
+  // printf("This program tests if the integration methods implemented respect the unitarity of the time evolution operator\n"
+  // "(only those who uphold this property should be ran) \n");
+  // printf("\nThe program generates a random NON normalized wavefunction.\n"
+  // "Then it applies the chosen integrator to approximate the time evolution of the wavefunction.\n"
+  // "The norm is computed and printed on the screen and to a file.\n"
+  // "Here the user can check that the norm is maintained through time (up to a certain tolerance)\n");
+  // printf("The test passes if all these numbers are < 1e-15\n\n"
+  // "Test params are: N=%d, mass=%f, tau=%.e, integrator_choice=%d\n\n",N, mass, tau,integrator_choice);
 
   double complex psi[N], psi_cp[N];
   /* the wavefunction generated is not normalized by default */
   set_random_wavefunction(psi,N);
   copy_wf(psi, psi_cp, N);
-  printf("Computing the norm of the vector psi \n ||psi|| = %f \n\n", norm(psi,N));
+  // printf("Computing the norm of the vector psi \n ||psi|| = %f \n\n", norm(psi,N));
   /* Now we apply the integrator chosen by the user,
   we want to check that the time operator is unitary and that psi keeps the same norm!  (not Euler)*/
 
   /* isnt one time step enough? */
   integrator(psi, tau, integrator_choice);
-  printf("Norm of vector at time 1 step  with integrator:%d \n ||psi|| = %f\n", integrator_choice, norm(psi,N));
-  printf("\n||psiold|| - ||psinew|| = %.6e\n", fabs(norm(psi_cp, N)-norm(psi,N)));
+  // printf("Norm of vector at time 1 step  with integrator:%d \n ||psi|| = %f\n", integrator_choice, norm(psi,N));
+  printf("||psiold|| - ||psinew|| = %.12e\n", fabs(norm(psi_cp, N)-norm(psi,N)));
   // printf("\n||psiold|| - ||psinew||/||psiold|| = %.6e\n", fabs((norm(psi_cp, N)-norm(psi,N))/norm(psi_cp,N)));
 
   /* Printing test infos to text file */
@@ -104,6 +104,6 @@ int main(int argc, char *argv[]) {
 
   fclose(fp);
 
-  printf("\nUNITARITY test finished.\n\n");
+  // printf("\nUNITARITY test finished.\n\n");
   return 0;
 }

@@ -43,10 +43,10 @@ argv[5] = potential
 ****************************************************************/
 
 
-  printf("This program calculates: maxdev = int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib) )\n"
-    "For random wavefunctions psia and psib and random complex coefficients alpha and beta\n"
-    "If the deviation is small (<10e-14?) the test was successful˜\n"
-  );
+  // printf("This program calculates: maxdev = int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib) )\n"
+  //   "For random wavefunctions psia and psib and random complex coefficients alpha and beta\n"
+  //   "If the deviation is small (<10e-14?) the test was successful˜\n"
+  // );
 
 
   srand(time(NULL)); // is called in beginning of the main.c
@@ -58,7 +58,7 @@ argv[5] = potential
   set_kinetic_params(mass);
   int pot = get_pot_choice();
   set_potential(pot);
-  print_hamiltonian_info();
+  // print_hamiltonian_info();
 
   double complex *psia, *psib, *psia_cp, *psib_cp;
   double complex alpha,  beta;
@@ -83,21 +83,21 @@ argv[5] = potential
   set_random_wavefunction(psia, N);
   set_random_wavefunction(psib, N);
 
-  printf(
-    "Linearity test: wavefuncitons:\n"
-    "\tPsia[0] = %.e + %.e * i \n" "\tPsib[0] = %.e + %.e * i\n",
-    creal(psia[0]), cimag(psia[0]), creal(psib[0]), cimag(psib[0])
-  );
+  // printf(
+  //   "Linearity test: wavefuncitons:\n"
+  //   "\tPsia[0] = %.e + %.e * i \n" "\tPsib[0] = %.e + %.e * i\n",
+  //   creal(psia[0]), cimag(psia[0]), creal(psib[0]), cimag(psib[0])
+  // );
 
   /* generate random coomplex coefficients */
   alpha = random_complex_coefficient();
   beta = random_complex_coefficient();
 
-  printf(
-    "Linearity test: coefficients:\n"
-    "\talpha= %.e + %.e * i \n" "\tPsib= %.e + %.e * i\n\n",
-    creal(alpha), cimag(alpha), creal(beta), cimag(beta)
-  );
+  // printf(
+  //   "Linearity test: coefficients:\n"
+  //   "\talpha= %.e + %.e * i \n" "\tPsib= %.e + %.e * i\n\n",
+  //   creal(alpha), cimag(alpha), creal(beta), cimag(beta)
+  // );
 
   /* Calculate int(alpha*psia + beta*psib) - (alpha*int(psia) + beta*int(psib) */
   /* Left hand side */
@@ -120,15 +120,16 @@ argv[5] = potential
   maxdev = 0.0;
   for(int n = 0; n < N; n++) {
     right[n] = alpha*psia[n] + beta*psib[n];
-    printf("left[%d]= %.4e + %.4e * i\t\t right[%d]= %.4e + %.4e * i\n", n,creal(left[n]), cimag(left[n]), n,creal(right[n]), cimag(right[n]));
+    // printf("left[%d]= %.4e + %.4e * i\t\t right[%d]= %.4e + %.4e * i\n", n,creal(left[n]), cimag(left[n]), n,creal(right[n]), cimag(right[n]));
     dev = cabs(left[n] - right[n]);
     if(dev>maxdev)  {maxdev=dev;}
   }
 
-  printf(
-    "\nMaximum Deviation is=\t%.6e\n"
-    "Tolerances for to check for success:\t" "\teuler method = \t" "\tUCM method = \t" "\tstrang splittin method = 10e^-16\n", maxdev);
-
+  // printf(
+  //   "\nMaximum Deviation is=\t%.6e\n"
+  //   "Tolerances for to check for success:\t" "\teuler method = \t" "\tUCM method = \t" "\tstrang splittin method = 10e^-16\n", maxdev);
+  printf("LINTEST with NUM=%d, time=%f, nsteps=%d, integ_choice=%d, pot_choice=%d\n", N, get_time(), get_nsteps(), integrator_choice, pot);
+  printf("Maximum Deviation is =\t%.12e\n", maxdev);
 
   /* Printing test infos to text file */
   FILE *fp;
@@ -175,7 +176,7 @@ argv[5] = potential
   free(left);
   free(right);
 
-  printf("\n Linearity Test FINISHED! \n\n");
+  // printf("\n Linearity Test FINISHED! \n\n");
 
   return 0;
 }

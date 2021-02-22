@@ -73,7 +73,7 @@ for (int q = 0; q < ntimesteps; q++) {
   integrator(psi,tau*q,integrator_choice);
   for (int i = 0; i < N; i++) {
   fprintf(
-    fp,"%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\t%.12e\n",
+    fp,"%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\n",
     tau*q,creal(psi[i]),cimag(psi[i]),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi), average_state_energy(psi),norm(psi, N));
   }
 }

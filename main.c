@@ -65,7 +65,7 @@ char filename[namesize];
 
 snprintf(
   filename, sizeof(filename),
-  "data/gauss_wf_wp_%s_%s_%s_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
+  "data/gauss_wf_wall6_%s_%s_%s_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
 
 fp = fopen(filename, "w");
 fprintf(fp, "\ntau\tREAL(psi[n])\tIMAG(psi[n])\taverx\tdeltax\taverp\tdeltap\tavg_state_energy\tnorm(psi)\n");

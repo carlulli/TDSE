@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 time="1"
 num="129"
-nsteps=("10" "20" "50" "100" "200" "1000")
+nsteps=("20000" "15000" "12000" "10000")
 integrator=("1" "2")
 potential="3"
 #size of wall (N+1)/2 -- (N+5)/2  height  10
@@ -22,7 +22,7 @@ done
 #!/usr/bin/bash
 time="1"
 num="129"
-nsteps=("1000" "2000" "5000" "10000")
+nsteps=("200000" "150000" "120000" "100000")
 integrator=("0")
 potential="3"
 #size of wall (N+1)/2 -- (N+5)/2  height  10

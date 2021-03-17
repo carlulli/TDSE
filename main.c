@@ -65,20 +65,27 @@ char filename[namesize];
 
 snprintf(
   filename, sizeof(filename),
-  "data/gauss_wf_wall6_%s_%s_%s_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
+  "data/gauss_wf_short_wall6_%s_%s_%s_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
+
+// fp = fopen(filename, "w");
+// fprintf(fp, "\ntime\tREAL(psi[n])\tIMAG(psi[n])\taverx\tdeltax\taverp\tdeltap\tavg_state_energy\tnorm(psi)\n");
+// for (int q = 0; q < ntimesteps; q++) {
+//   integrator(psi,tau*q,integrator_choice);
+//   for (int i = 0; i < N; i++) {
+//      fprintf(fp,"%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\n",
+//               tau*q,creal(psi[i]),cimag(psi[i]),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi), average_state_energy(psi),norm(psi, N));
+//      }
+// }
+// fclose(fp);
 
 fp = fopen(filename, "w");
-fprintf(fp, "\ntau\tREAL(psi[n])\tIMAG(psi[n])\taverx\tdeltax\taverp\tdeltap\tavg_state_energy\tnorm(psi)\n");
+fprintf(fp, "\ntime\tREAL(psi[n])\tIMAG(psi[n])\taverx\tdeltax\taverp\tdeltap\tavg_state_energy\tnorm(psi)\n");
 for (int q = 0; q < ntimesteps; q++) {
   integrator(psi,tau*q,integrator_choice);
-  for (int i = 0; i < N; i++) {
-  fprintf(
-    fp,"%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\n",
-    tau*q,creal(psi[i]),cimag(psi[i]),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi), average_state_energy(psi),norm(psi, N));
-  }
+  fprintf(fp,"%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\n",
+    tau*q,creal(psi[N]),cimag(psi[N]),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi), average_state_energy(psi),norm(psi, N));
 }
 fclose(fp);
-
 
 return 0;
 }

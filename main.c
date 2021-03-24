@@ -26,6 +26,7 @@ argv[5] = potential
 argv[6] = mu
 argv[7] = dx
 argv[8] = dp
+argv[9] = snapshot
 ****************************************************************/
 /* Here the parameters are passed in the set_params function, which checks the validity */
 set_params(argc, (char**) argv);
@@ -43,6 +44,9 @@ double dp = atof(argv[8]);
 set_kinetic_params(mass);
 set_potential(pot_choice);
 print_hamiltonian_info();
+int snapshot = atoi(argv[9]);
+double tsnap = ttime/snapshot;
+double time_since_snap = 0.0000001;
 
 printf(
   "The program will calculate the TDSE of an initial wave packet with the following parameters input by the user:\n"
@@ -59,14 +63,14 @@ printf("Computing time evolution and printing on text file\n");
 /* Printing test infos to text file */
 
 FILE *fp;
-int namesize = 60;
+int namesize = 70;
 for (int i=1; i<=8; i++) { namesize += strlen(argv[i]); }
 char filename[namesize];
 
 snprintf(
   filename, sizeof(filename),
-  "data/gauss_wf_fixed_wall6_%s_%s_%s_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
-
+  "data/gauss_wf_short_wall6_%s_%s_%s_%s_%s_%s_%s_%s_%s.txt", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], argv[9]);
+//
 // fp = fopen(filename, "w");
 // fprintf(fp, "\ntime\tREAL(psi[n])\tIMAG(psi[n])\taverx\tdeltax\taverp\tdeltap\tavg_state_energy\tnorm(psi)\n");
 // for (int q = 0; q < ntimesteps; q++) {
@@ -80,10 +84,15 @@ snprintf(
 
 fp = fopen(filename, "w");
 fprintf(fp, "\ntime\tREAL(psi[n])\tIMAG(psi[n])\taverx\tdeltax\taverp\tdeltap\tavg_state_energy\tnorm(psi)\n");
-for (int q = 0; q < ntimesteps; q++) {
+for (int q = 0; q <= ntimesteps; q++, time_since_snap += tau) {
+  if ( time_since_snap >= tsnap ) {
+    time_since_snap = 0.0000001; // offset because we didn't reach what we were aiming for
+  }
+  if ( time_since_snap == 0.0000001) {
+    fprintf(fp,"%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\n",
+      tau*q,creal(psi[N]),cimag(psi[N]),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi), average_state_energy(psi),norm(psi, N));
+  }
   integrator(psi,tau,integrator_choice); // ERROR passed tau*q instead of tau
-  fprintf(fp,"%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\t%.16e\n",
-    tau*q,creal(psi[N]),cimag(psi[N]),get_avgx(psi),get_deltax(psi),get_avgp(psi),get_deltap(psi), average_state_energy(psi),norm(psi, N));
 }
 fclose(fp);
 

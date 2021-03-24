@@ -90,7 +90,20 @@ double get_time() {
   return time;
 }
 
+/* tried to include the safety thing */
 int get_nsteps() {
+  static int sNSTEPS=0;
+  if(nsteps==1) {
+    printf("[ geometry.c| get_nsteps() ] Error! nsteps not yet set!\n");
+    exit(-1);
+  }
+  if(sNSTEPS==0) { sNSTEPS=nsteps; }
+  else {
+    if((nsteps!=sNSTEPS))  {
+       printf("[ geometry.c| get_integ_choice() ] Error! nsteps has changed: (%d) -> (%d)\n",sNSTEPS,nsteps);
+       exit(-1);
+    }
+  }
   return nsteps;
 }
 
